@@ -4,6 +4,7 @@ import { colors } from "./colors";
 
 export const globalStyles = StyleSheet.create({
   button: {
+    fontFamily: "Poppins-SemiBold",
     backgroundColor: colors.orange,
     borderRadius: 12,
     alignItems: "center",

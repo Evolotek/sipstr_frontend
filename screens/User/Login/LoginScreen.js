@@ -1,149 +1,126 @@
-import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import CommonTextView from "../../../components/CommonTextView";
-import CommonTextField from "../../../components/CommonTextField";
-import CommonButton from "../../../components/CommonButton";
-import CommonAppNameLabel from "../../../components/CommonAppNameLabel";
-import { colors } from "../../../components/colors";
-import Utils from "../../../Utils/CommonUtils";
-import { useLoader } from "../../../Utils/LoaderContext";
-import { loginUser } from "../../../viewmodels/userViewModel";
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useMutation } from 'react-query';
+import { loginUser } from '../../../api/authService';
+import Logo from '../../../components/Logo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CommonButton from '../../../components/CommonButton';
 
-const LoginScreen = ({ navigation }) => {
-  const [emailPhoneInput, SetEmailPhoneInput] = useState("");
-  const [passwordInput, SetPasswordInput] = useState("");
-  const { setLoading } = useLoader();
+export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const validateAndLogin = () => {
-    console.log("Login Btn Pressed");
-    const emailOrPhone = emailPhoneInput.trim();
-    const password = passwordInput.trim();
+  const mutation = useMutation(loginUser, {
+    onSuccess: async (data) => {
+      console.log('Token:', data.token);
 
-    if (!emailOrPhone || !password) {
-      Utils.showToast("All fields are required.", "error");
+      await AsyncStorage.setItem('authToken', data.token);
+      navigation.navigate('Home');
+    },
+    onError: (error) => {
+      console.error('Login error:', error.message);
+      Alert.alert('Login Failed', error.message);
+    }
+  });
+
+  const handleLogin = () => {
+    // Email validation (basic format check)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
-    if (
-      !Utils.isEmailValid(emailOrPhone) &&
-      !Utils.isPhoneValid(emailOrPhone)
-    ) {
-      Utils.showToast("Enter a valid email or 10-digit phone number.", "error");
-      return;
-    }
-    if (!Utils.isInternetConnected) {
-      Utils.showToast("Please connect to Internet!", "error");
+    // Password validation (check if password is not empty and is at least 6 characters long)
+    if (!password || password.length < 6) {
+      Alert.alert('Invalid Password', 'Password must be at least 6 characters long.');
       return;
     }
 
-    const loginRequest = {
-      email: emailOrPhone,
-      password: password,
-    };
-
-    handleLogin(loginRequest);
+    mutation.mutate({ email, password });
   };
 
-  const handleLogin = async (payload) => {
-    try {
-      setLoading(true);
-      const result = await loginUser(payload);
-      if (result.success) {
-        Utils.showToast("Login Success!");
-        navigation.navigate("MainTabs");
-      } else {
-        Utils.showToast(result.message, "error");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSignUp = () => {
+    navigation.navigate('SignUp');
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <CommonAppNameLabel fontSize={60} />
-      <CommonTextView style={styles.title}>Welcome</CommonTextView>
-
-      <CommonTextField
+    <View style={styles.container}>
+      <Logo />
+      <Text style={styles.welcome}>Welcome</Text>
+      <TextInput
         placeholder="Enter Mobile Number/Email"
-        value={emailPhoneInput}
-        onChangeText={SetEmailPhoneInput}
         style={styles.input}
+        value={email}
+        onChangeText={setEmail}
       />
-      <CommonTextField
+      <TextInput
         placeholder="Enter Password"
-        secureTextEntry
-        value={passwordInput}
-        onChangeText={SetPasswordInput}
         style={styles.input}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
-
-      <TouchableOpacity
-        style={styles.forgotPasswordContainer}
-        onPress={() => navigation.navigate("ForgotPassword")}
-      >
-        <CommonTextView style={styles.forgotText}>
-          Forgot Password
-        </CommonTextView>
+      <TouchableOpacity>
+        <Text style={styles.forgot}>Forgot Password</Text>
       </TouchableOpacity>
-
       <CommonButton
         title="Login"
-        onPress={validateAndLogin}
+        onPress={handleLogin}
         style={styles.button}
       />
-
-      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-        <CommonTextView style={styles.signupText}>
-          Don’t have an account?{" "}
-          <CommonTextView style={styles.signupLink}>Signup</CommonTextView>
-        </CommonTextView>
-      </TouchableOpacity>
-    </SafeAreaView>
+      <Text style={styles.signupText}>
+        Don’t have an account?  <TouchableOpacity onPress={handleSignUp}><Text style={styles.signupLink}>Signup</Text></TouchableOpacity>
+      </Text>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    gap: 16,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor:'#ffffff'
   },
-
-  title: {
-    fontSize: 26,
-    fontFamily: "Poppins-SemiBold",
-    marginTop: 10,
+  logo: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#e65100',
+    textAlign: 'center'
+  },
+  welcome: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 24,
+    textAlign: 'center',
+    marginVertical: 20
   },
   input: {
-    width: "100%",
+    height: 46,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 20,
+    fontFamily: 'Poppins_400Regular',
+    backgroundColor: '#fff'
   },
-  forgotPasswordContainer: {
-    alignSelf: "flex-end",
-    marginRight: 8,
-  },
-  forgotText: {
-    color: colors.orange,
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
+  forgot: {
+    textAlign: 'right',
+    color: '#e65100',
+    marginBottom: 20
   },
   signupText: {
-    fontSize: 14,
-    fontFamily: "Poppins-Regular",
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#777'
   },
   signupLink: {
-    color: colors.orange,
-    fontFamily: "Poppins-SemiBold",
+    color: '#e65100',
+    fontWeight: 'bold'
   },
-  button: {
-    width: "100%",
-  },
+  loginBtn: {
+    width: 120
+  }
 });
-
-export default LoginScreen;

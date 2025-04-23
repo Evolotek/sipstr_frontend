@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import React from "react";
+import { View, StyleSheet } from "react-native";
 import CommonTextView from "../../components/CommonTextView";
 import CommonButton from "../../components/CommonButton";
 import { globalStyles } from "../../components/styles";
@@ -7,28 +7,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CommonAppNameLabel from "../../components/CommonAppNameLabel";
 import { colors } from "../../components/colors";
 import { getUserData } from "../../Utils/StorageHelper";
+import Logo from "../../components/Logo";
 
 const WelcomeScreen = ({ navigation }) => {
   const navigateToHome = async () => {
     var user = await getUserData();
     var screenName = user ? "MainTabs" : "Login";
-    console.log(screenName);
     navigation.reset({
       index: 0,
       routes: [{ name: screenName }],
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
-        <CommonAppNameLabel fontSize={70} />
+        <Logo />
       </View>
 
       <View style={styles.bottomSection}>
-        <CommonTextView style={{ fontSize: 27, margin: 20 }}>
-          Are you over 21?
-        </CommonTextView>
-        <CommonTextView style={{ fontSize: 18 }}>
+        <CommonTextView style={styles.title}>Are you over 21?</CommonTextView>
+        <CommonTextView style={styles.subtitle}>
           You must confirm that you are of legal drinking age to enter
         </CommonTextView>
 
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingBottom: 50,
   },
   logoContainer: {
     flex: 1,
@@ -65,15 +64,29 @@ const styles = StyleSheet.create({
   bottomSection: {
     alignItems: "center",
   },
-
+  title: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 10,
+    textAlign: "center",
+    fontFamily: "Poppins-SemiBold",
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#333",
+    textAlign: "center",
+    marginHorizontal: 20,
+    marginBottom: 20,
+    fontFamily: "Poppins-Regular"
+  },
   buttonRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    margin: 20,
+    justifyContent: "space-around",
+    width: "100%",
   },
   button: {
-    width: "150",
-    marginRight: 20,
+    width: 100,
+    backgroundColor: colors.orange,
     alignItems: "center",
   },
 });

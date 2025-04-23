@@ -1,224 +1,146 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import GoogleIcon from "react-native-vector-icons/FontAwesome";
+import AppleIcon from "react-native-vector-icons/FontAwesome";
+import { loginUser, signup } from "../../../api/authService";
+import Logo from "../../../components/Logo";
 import CommonButton from "../../../components/CommonButton";
-import CommonTextView from "../../../components/CommonTextView";
-import CommonTextField from "../../../components/CommonTextField";
-import CommonAppNameLabel from "../../../components/CommonAppNameLabel";
-import { colors } from "../../../components/colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Utils from "../../../Utils/CommonUtils";
-import HeaderBar from "../../../components/HeaderBar";
-import { useLoader } from "../../../Utils/LoaderContext";
-import { signUpUser } from "../../../viewmodels/userViewModel";
 
-const SignUpScreen = ({ navigation }) => {
-  const [nameInput, setNameInput] = useState("");
-  const [emailPhoneInput, setEmailPhoneInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
-  const [confirmPwdInput, setConfirmPwdInput] = useState("");
-  const { setLoading } = useLoader();
+export default function Signup({ navigation }) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    mobileNumber: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const validateAndSignUp = () => {
-    const name = nameInput.trim();
-    const emailOrPhone = emailPhoneInput.trim();
-    const password = passwordInput.trim();
-    const confirmPwd = confirmPwdInput.trim();
-    var otpSignup = false;
-    var email = "";
-    var mobileNumber = "";
+  const handleChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
+  const handleSubmit = async () => {
+    const { fullName, mobileNumber, email, password, confirmPassword } = formData;
 
-    if (!name || !emailOrPhone || !password || !confirmPwd) {
-      Utils.showToast("All fields are required.", "error");
+    // Validation Rules
+    if (!fullName || !mobileNumber || !email || !password || !confirmPassword) {
+      Alert.alert("Validation Error", "All fields are required");
       return;
     }
 
-    if (Utils.isEmailValid(emailOrPhone)) {
-      email = emailOrPhone;
-    } else if (Utils.isPhoneValid(emailOrPhone)) {
-      mobileNumber = emailOrPhone;
-      otpSignup = true;
-    } else {
-      Utils.showToast("Enter a valid email or 10-digit phone number.", "error");
+    // Simple email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Validation Error", "Please enter a valid email address");
       return;
     }
 
-    if (!passwordRegex.test(password)) {
-      Utils.showToast(
-        "Password must include uppercase, lowercase, digit & special char.",
-        "error"
-      );
+    // US or Qatar phone number check
+    const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
+    if (!phoneRegex.test(mobileNumber)) {
+      Alert.alert("Validation Error", "Enter valid US (+1) or Qatar (+974) mobile number");
       return;
     }
 
-    if (password !== confirmPwd) {
-      Utils.showToast("Passwords do not match.", "error");
+    if (password.length < 6) {
+      Alert.alert("Validation Error", "Password must be at least 6 characters");
       return;
     }
 
-    const request = {
-      password: password,
-      fullName: name,
-      roleEnum: "CUSTOMER",
-      otpSignup: otpSignup,
-      ...(email ? { email } : { mobileNumber }),
+    if (password !== confirmPassword) {
+      Alert.alert("Validation Error", "Passwords do not match");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+      fullName: formData.fullName,
+      mobileNumber: formData.mobileNumber,
+      roleEnum: "USER",
+      otpSignup: true,
     };
-    handleSignUp(request);
-  };
-
-  const handleSignUp = async (payload) => {
     try {
-      setLoading(true);
-      const result = await signUpUser(payload);
-      setLoading(false);
-
-      if (result.success) {
-        navigation.navigate("VerifyOTP");
-      } else {
-        Utils.showToast(result.message, "error");
-      }
+      await signup(payload);
+      // Alert.alert("Success", "Signup successful");
+      await loginUser({email: formData.email, password:formData.password});
+      navigation.navigate("Home");
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      Alert.alert("Signup Failed", error.message);
     }
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <HeaderBar navigation={navigation} title="" />
-      <CommonAppNameLabel fontSize={60} />
-      <CommonTextView style={styles.title}>Create Account</CommonTextView>
+  const handleGoogleLogin = () => {
+    // Call your Google login logic here
+  };
 
-      <CommonTextField
-        placeholder="Enter Name"
-        value={nameInput}
-        onChangeText={setNameInput}
-        returnKeyType="next"
-        inputMode="text"
-        style={styles.input}
-      />
-      <CommonTextField
-        placeholder="Enter Mobile Number/Email"
-        value={emailPhoneInput}
-        onChangeText={setEmailPhoneInput}
-        returnKeyType="next"
-        inputMode="text"
-        style={styles.input}
-      />
-      <CommonTextField
-        placeholder="Enter Password"
-        secureTextEntry={true}
-        value={passwordInput}
-        returnKeyType="next"
-        onChangeText={setPasswordInput}
-        style={styles.input}
-      />
-      <CommonTextField
-        placeholder="Confirm Password"
-        secureTextEntry={true}
-        value={confirmPwdInput}
-        returnKeyType="done"
-        onChangeText={setConfirmPwdInput}
-        style={styles.input}
-      />
+  const handleAppleLogin = () => {
+    // Call your Apple login logic here
+  };
+
+  const gotoLogin = () => {
+    navigation.navigate('Login');
+  };
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#ffffff' }}>
+      <Logo />
+      <Text style={{ fontSize: 24, fontWeight: '600', marginVertical: 20, fontFamily: 'Poppins_400Regular' }}>Create Account</Text>
+
+      <TextInput placeholder="Enter Name" style={styles.input} onChangeText={(val) => handleChange("fullName", val)} />
+      <TextInput placeholder="Enter Mobile Number/Email" style={styles.input} onChangeText={(val) => handleChange("mobileNumber", val)} />
+      <TextInput placeholder="Enter Email" style={styles.input} onChangeText={(val) => handleChange("email", val)} />
+      <TextInput placeholder="Enter Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("password", val)} />
+      <TextInput placeholder="Confirm Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("confirmPassword", val)} />
 
       <CommonButton
-        title="Signup"
-        onPress={validateAndSignUp}
+        title="SignUp"
+        onPress={handleSubmit}
         style={styles.button}
       />
 
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <CommonTextView style={styles.loginText}>
-          Already have an account?{" "}
-          <CommonTextView style={styles.loginLink}>Login</CommonTextView>
-        </CommonTextView>
-      </TouchableOpacity>
+      <Text style={{ marginVertical: 10 }}>Already have an account?  <TouchableOpacity onPress={gotoLogin}><Text style={{ color: '#f97316' }}>Login</Text></TouchableOpacity></Text>
 
-      <View style={styles.dividerRow}>
-        <View style={styles.divider} />
-        <CommonTextView style={styles.dividerText}>
-          Or Register with
-        </CommonTextView>
-        <View style={styles.divider} />
-      </View>
+      <Text style={{ color: '#aaa', marginVertical: 10 }}>Or Register with</Text>
 
-      <View style={styles.socialRow}>
-        <TouchableOpacity>
-          <Image
-            source={require("../../../assets/images/google.png")}
-            style={styles.socialIcon}
-          />
+      <View style={{ flexDirection: 'row', gap: 20 }}>
+        <TouchableOpacity onPress={handleGoogleLogin} style={styles.iconButton}>
+          <GoogleIcon name="google" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Image
-            source={require("../../../assets/images/apple.png")}
-            style={styles.socialIcon}
-          />
+        <TouchableOpacity onPress={handleAppleLogin} style={styles.iconButton}>
+          <AppleIcon name="apple" size={24} color="#000" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.white,
-    padding: 24,
-    alignItems: "center",
-    gap: 16,
-  },
-
-  title: {
-    fontSize: 26,
-    fontFamily: "Poppins-SemiBold",
-    marginBottom: 8,
-  },
+const styles = {
   input: {
-    width: "100%",
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    width: '100%',
+    marginVertical: 5
   },
   button: {
-    width: "100%",
+    backgroundColor: '#f97316',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '100%',
+    marginVertical: 10
   },
-  loginText: {
-    fontSize: 14,
-    fontFamily: "Poppins-Regular",
-    marginTop: 12,
-  },
-  loginLink: {
-    fontFamily: "Poppins-SemiBold",
-    color: colors.orange,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 18,
-    width: "100%",
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#CCC",
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-  },
-  socialRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 20,
-  },
-  socialIcon: {
-    height: 40,
-    width: 40,
-    borderRadius: 8,
-    resizeMode: "contain",
-  },
-});
-
-export default SignUpScreen;
+  iconButton: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginHorizontal: 10
+  }
+};

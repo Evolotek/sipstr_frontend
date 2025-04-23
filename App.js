@@ -1,28 +1,28 @@
-import React, { useEffect } from "react";
-import { useFonts } from "expo-font";
-import AppNavigator from "./navigations/Navigation";
-import Toast from "react-native-toast-message";
-import { LoaderProvider } from "./Utils/LoaderContext";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+
+import HomeScreen from './screens/Home/HomeScreen';
+import LoginScreen from './screens/User/Login/LoginScreen';
+import AppNavigator from './navigations/Navigation';
+
+const queryClient = new QueryClient();
+const Stack = createStackNavigator();
 
 export default function App() {
-  //configure Fonts
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("./assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-SemiBold": require("./assets/fonts/Poppins-SemiBold.ttf"),
-    "ReggaeOne-Regular": require("./assets/fonts/ReggaeOne-Regular.ttf"),
-    "ArefRuqaaInk-Bold": require("./assets/fonts/ArefRuqaaInk-Bold.ttf"),
-    "ArefRuqaaInk-Regular": require("./assets/fonts/ArefRuqaaInk-Regular.ttf"),
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
   });
 
-  if (!fontsLoaded) return null;
+  
 
   return (
-    <SafeAreaProvider>
-      <LoaderProvider>
-        <AppNavigator />
-        <Toast />
-      </LoaderProvider>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+     <AppNavigator/>
+    </QueryClientProvider>
   );
 }
