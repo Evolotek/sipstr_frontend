@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import GoogleIcon from "react-native-vector-icons/FontAwesome";
-import AppleIcon from "react-native-vector-icons/FontAwesome";
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { loginUser, signup } from "../../../api/authService";
 import Logo from "../../../components/Logo";
 import CommonButton from "../../../components/CommonButton";
+import GoogleLogin from "./GoogleLogin";
+import AppleLogin from "./AppleLogin";
+import CommonError from "../../../components/CommonFieldError";
 
 export default function Signup({ navigation }) {
   const [formData, setFormData] = useState({
@@ -16,47 +16,44 @@ export default function Signup({ navigation }) {
     confirmPassword: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: null }); // Clear error on input change
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    const { fullName, mobileNumber, email, password, confirmPassword } = formData;
+
+    if (!fullName) newErrors.fullName = "Full name is required";
+    if (!mobileNumber) newErrors.mobileNumber = "Mobile number is required";
+    if (!email) newErrors.email = "Email is required";
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      newErrors.email = "Invalid email address";
+    }
+
+    const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
+    if (mobileNumber && !phoneRegex.test(mobileNumber)) {
+      newErrors.mobileNumber = "Invalid phone number (+1XXXXXXXXXX or +974XXXXXXXX)";
+    }
+
+    if (!password) newErrors.password = "Password is required";
+    else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
+
+    if (!confirmPassword) newErrors.confirmPassword = "Confirm your password";
+    else if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    const { fullName, mobileNumber, email, password, confirmPassword } = formData;
+    if (!validate()) return;
 
-    // Validation Rules
-    if (!fullName || !mobileNumber || !email || !password || !confirmPassword) {
-      Alert.alert("Validation Error", "All fields are required");
-      return;
-    }
-
-    // Simple email regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Validation Error", "Please enter a valid email address");
-      return;
-    }
-
-    // US or Qatar phone number check
-    const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
-    if (!phoneRegex.test(mobileNumber)) {
-      Alert.alert("Validation Error", "Enter valid US (+1) or Qatar (+974) mobile number");
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert("Validation Error", "Password must be at least 6 characters");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert("Validation Error", "Passwords do not match");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
     const payload = {
       email: formData.email,
       password: formData.password,
@@ -65,57 +62,56 @@ export default function Signup({ navigation }) {
       roleEnum: "USER",
       otpSignup: true,
     };
+
     try {
       await signup(payload);
-      // Alert.alert("Success", "Signup successful");
-      await loginUser({email: formData.email, password:formData.password});
+      await loginUser({ email: formData.email, password: formData.password });
       navigation.navigate("Home");
     } catch (error) {
-      Alert.alert("Signup Failed", error.message);
+      setErrors({ api: error.message });
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Call your Google login logic here
-  };
-
-  const handleAppleLogin = () => {
-    // Call your Apple login logic here
-  };
-
-  const gotoLogin = () => {
-    navigation.navigate('Login');
-  };
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#ffffff' }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, backgroundColor: '#ffffff' }}>
       <Logo />
-      <Text style={{ fontSize: 24, fontWeight: '600', marginVertical: 20, fontFamily: 'Poppins_400Regular' }}>Create Account</Text>
+      <Text style={{ fontSize: 24, fontWeight: '600', marginVertical: 20, fontFamily: 'Poppins_400Regular', textAlign: 'center' }}>
+        Create Account
+      </Text>
 
       <TextInput placeholder="Enter Name" style={styles.input} onChangeText={(val) => handleChange("fullName", val)} />
-      <TextInput placeholder="Enter Mobile Number/Email" style={styles.input} onChangeText={(val) => handleChange("mobileNumber", val)} />
+      {errors.fullName && <CommonError message={errors.fullName} />}
+
+      <TextInput placeholder="Enter Mobile Number" style={styles.input} onChangeText={(val) => handleChange("mobileNumber", val)} />
+      {errors.mobileNumber && <CommonError message={errors.mobileNumber} />}
+
       <TextInput placeholder="Enter Email" style={styles.input} onChangeText={(val) => handleChange("email", val)} />
+      {errors.email && <CommonError message={errors.email} />}
+
       <TextInput placeholder="Enter Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("password", val)} />
+      {errors.password && <CommonError message={errors.password} />}
+
       <TextInput placeholder="Confirm Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("confirmPassword", val)} />
+      {errors.confirmPassword && <CommonError message={errors.confirmPassword} />}
 
-      <CommonButton
-        title="SignUp"
-        onPress={handleSubmit}
-        style={styles.button}
-      />
+      {errors.api && <CommonError message={errors.api} />}
 
-      <Text style={{ marginVertical: 10 }}>Already have an account?  <TouchableOpacity onPress={gotoLogin}><Text style={{ color: '#f97316' }}>Login</Text></TouchableOpacity></Text>
+      <CommonButton title="SignUp" onPress={handleSubmit} style={styles.button} />
 
-      <Text style={{ color: '#aaa', marginVertical: 10 }}>Or Register with</Text>
-
-      <View style={{ flexDirection: 'row', gap: 20 }}>
-        <TouchableOpacity onPress={handleGoogleLogin} style={styles.iconButton}>
-          <GoogleIcon name="google" size={24} color="#000" />
+      <Text style={{ marginVertical: 10, textAlign: 'center' }}>
+        Already have an account?{" "}
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={{ color: '#f97316' }}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleAppleLogin} style={styles.iconButton}>
-          <AppleIcon name="apple" size={24} color="#000" />
-        </TouchableOpacity>
+      </Text>
+
+      <Text style={{ color: '#aaa', marginVertical: 10, textAlign: 'center' }}>Or Register with</Text>
+
+      <View style={{ gap: 20, alignItems: 'center' }}>
+        <GoogleLogin />
+        <AppleLogin />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -126,7 +122,8 @@ const styles = {
     borderRadius: 5,
     padding: 10,
     width: '100%',
-    marginVertical: 5
+    marginVertical: 5,
+    fontFamily: 'Poppins_400Regular'
   },
   button: {
     backgroundColor: '#f97316',
@@ -135,12 +132,5 @@ const styles = {
     alignItems: 'center',
     width: '100%',
     marginVertical: 10
-  },
-  iconButton: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10
   }
 };

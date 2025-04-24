@@ -13,11 +13,13 @@ import CategoriesScreen from "../screens/Products/CategoriesScreen";
 import VerifyOTPScreen from "../screens/User/OTP/VerifyOTP";
 import CartScreen from "../screens/Cart/CartScreen";
 import HomeScreen from "../screens/Home/HomeScreen";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "../components/CustomToastNew";
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  return (
+  return (<>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -46,6 +48,8 @@ const AppNavigator = () => {
         <Stack.Screen name="MainTabs" component={BottomTabs} />
       </Stack.Navigator>
     </NavigationContainer>
+    <Toast config={toastConfig} />
+  </>
   );
 };
 
