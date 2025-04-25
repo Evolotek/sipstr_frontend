@@ -15,7 +15,6 @@ import Logo from "../../../components/Logo";
 const VerifyOTPScreen = ({ navigation }) => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const refs = [useRef(), useRef(), useRef(), useRef()];
-
   // Send OTP Mutation
   const sendOTPMutation = useMutation({
     mutationFn: sendOTP,
@@ -48,8 +47,9 @@ const VerifyOTPScreen = ({ navigation }) => {
     },
   });
 
-  useEffect(() => {
-    sendOTPMutation.mutate({ mobileNumber: AsyncStorage.getItem('user_data').mobileNumber });
+  useEffect(async () => {
+    const userData = await AsyncStorage.getItem('user_data');
+    sendOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber });
   }, []);
 
   const handleChange = (index, value) => {
@@ -69,13 +69,14 @@ const VerifyOTPScreen = ({ navigation }) => {
     }
   };
 
-  const validateAndSubmit = () => {
+  const validateAndSubmit =  async () => {
     const joinedOTP = otp.join("");
     if (joinedOTP.length < 4) {
       Toast.show({ type: 'error', text1: "Please enter the full 4-digit OTP" });
       return;
     }
-    verifyOTPMutation.mutate({ mobileNumber: AsyncStorage.getItem('user_data').mobileNumber, otp: joinedOTP });
+    const userData = await AsyncStorage.getItem('user_data');
+    verifyOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber, otp: joinedOTP });
   };
 
   return (
@@ -109,7 +110,10 @@ const VerifyOTPScreen = ({ navigation }) => {
         onPress={validateAndSubmit}
         loading={verifyOTPMutation.isLoading}
       />
-      <TouchableOpacity onPress={() => sendOTPMutation.mutate({ mobileNumber: AsyncStorage.getItem('user_data').mobileNumber })}>
+      <TouchableOpacity onPress={async () => {
+         const userData = await AsyncStorage.getItem('user_data');
+        sendOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber })}
+        }>
         <CommonTextView style={styles.resendLink}>
           Resend OTP
         </CommonTextView>

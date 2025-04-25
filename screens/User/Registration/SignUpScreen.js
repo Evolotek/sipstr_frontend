@@ -57,7 +57,7 @@ export default function Signup({ navigation }) {
     mutationFn: (payload) => signup(payload),
     onSuccess: (result) => {
       if (result.success) {
-        AsyncStorage.setItem("user_data", formData);
+        AsyncStorage.setItem("user_data", JSON.stringify(formData));
         navigation.navigate("VerifyOTP");
       } else {
         Toast.show({ type: 'error', text1: result.message || 'Signup failed.' });
