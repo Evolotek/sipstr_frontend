@@ -6,41 +6,41 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
 
 export const loginUser = async ({ email, password }) => {
   try {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
+    const { data } = await api.post('/auth/login', { email, password });
+    return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Login failed');
   }
 };
 
-export const signup = async (data) => {
+export const signup = async (userData) => {
   try {
-    const response = await api.post('/auth/signup', data);
-    return response.data;
+    const { data } = await api.post('/auth/signup', userData);
+    return data;
   } catch (error) {
     console.error('Signup error:', error);
     throw new Error(error.response?.data?.message || 'Signup failed');
   }
 };
 
-export const sendOTP = async ({ phone }) => {
+export const sendOTP = async ({ mobileNumber }) => {
   try {
-    const response = await api.post('/auth/otp/send', { phone });
-    return response.data;
+    const { data } = await api.post('/auth/otp/send', { mobileNumber });
+    return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to send OTP');
   }
 };
 
-export const verifyOTP = async ({ phone, otp }) => {
+export const verifyOTP = async ({ mobileNumber, otp }) => {
   try {
-    const response = await api.post('/auth/otp/verify', { phone, otp });
-    return response.data;
+    const { data } = await api.post('/auth/otp/verify', { mobileNumber, otp });
+    return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Invalid OTP');
   }

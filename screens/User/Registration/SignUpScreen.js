@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import { loginUser, signup } from "../../../api/authService";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { useMutation } from 'react-query';
+import { signup } from "../../../api/authService";
 import Logo from "../../../components/Logo";
 import CommonButton from "../../../components/CommonButton";
 import GoogleLogin from "./GoogleLogin";
 import AppleLogin from "./AppleLogin";
 import CommonError from "../../../components/CommonFieldError";
+import CommonTextInput from "../../../components/CommonTextField";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Signup({ navigation }) {
   const [formData, setFormData] = useState({
@@ -20,7 +23,7 @@ export default function Signup({ navigation }) {
 
   const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: null }); // Clear error on input change
+    setErrors({ ...errors, [name]: null });
   };
 
   const validate = () => {
@@ -32,9 +35,7 @@ export default function Signup({ navigation }) {
     if (!email) newErrors.email = "Email is required";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && !emailRegex.test(email)) {
-      newErrors.email = "Invalid email address";
-    }
+    if (email && !emailRegex.test(email)) newErrors.email = "Invalid email address";
 
     const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
     if (mobileNumber && !phoneRegex.test(mobileNumber)) {
@@ -51,7 +52,23 @@ export default function Signup({ navigation }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {
+  // React Query mutation
+  const signupMutation = useMutation({
+    mutationFn: (payload) => signup(payload),
+    onSuccess: (result) => {
+      if (result.success) {
+        AsyncStorage.setItem("user_data", formData);
+        navigation.navigate("VerifyOTP");
+      } else {
+        Toast.show({ type: 'error', text1: result.message || 'Signup failed.' });
+      }
+    },
+    onError: (error) => {
+      Toast.show({ type: 'error', text1: error.message || 'Signup failed.' });
+    },
+  });
+
+  const handleSubmit = () => {
     if (!validate()) return;
 
     const payload = {
@@ -63,13 +80,7 @@ export default function Signup({ navigation }) {
       otpSignup: true,
     };
 
-    try {
-      await signup(payload);
-      await loginUser({ email: formData.email, password: formData.password });
-      navigation.navigate("Home");
-    } catch (error) {
-      setErrors({ api: error.message });
-    }
+    signupMutation.mutate(payload);
   };
 
   return (
@@ -79,24 +90,27 @@ export default function Signup({ navigation }) {
         Create Account
       </Text>
 
-      <TextInput placeholder="Enter Name" style={styles.input} onChangeText={(val) => handleChange("fullName", val)} />
+      <CommonTextInput placeholder="Enter Name" style={styles.input} onChangeText={(val) => handleChange("fullName", val)} />
       {errors.fullName && <CommonError message={errors.fullName} />}
 
-      <TextInput placeholder="Enter Mobile Number" style={styles.input} onChangeText={(val) => handleChange("mobileNumber", val)} />
+      <CommonTextInput placeholder="Enter Mobile Number" style={styles.input} onChangeText={(val) => handleChange("mobileNumber", val)} />
       {errors.mobileNumber && <CommonError message={errors.mobileNumber} />}
 
-      <TextInput placeholder="Enter Email" style={styles.input} onChangeText={(val) => handleChange("email", val)} />
+      <CommonTextInput placeholder="Enter Email" style={styles.input} onChangeText={(val) => handleChange("email", val)} />
       {errors.email && <CommonError message={errors.email} />}
 
-      <TextInput placeholder="Enter Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("password", val)} />
+      <CommonTextInput placeholder="Enter Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("password", val)} />
       {errors.password && <CommonError message={errors.password} />}
 
-      <TextInput placeholder="Confirm Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("confirmPassword", val)} />
+      <CommonTextInput placeholder="Confirm Password" secureTextEntry style={styles.input} onChangeText={(val) => handleChange("confirmPassword", val)} />
       {errors.confirmPassword && <CommonError message={errors.confirmPassword} />}
 
-      {errors.api && <CommonError message={errors.api} />}
-
-      <CommonButton title="SignUp" onPress={handleSubmit} style={styles.button} />
+      <CommonButton
+        title={signupMutation.isPending ? "Signing Up..." : "SignUp"}
+        onPress={handleSubmit}
+        style={styles.button}
+        disabled={signupMutation.isPending}
+      />
 
       <Text style={{ marginVertical: 10, textAlign: 'center' }}>
         Already have an account?{" "}
