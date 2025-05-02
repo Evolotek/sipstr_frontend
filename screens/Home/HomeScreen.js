@@ -1,11 +1,10 @@
 import React from 'react';
-import MapView from 'react-native-maps';
 import { StyleSheet, View } from 'react-native';
 
 export default function Home() {
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} />
+     Home Screen
     </View>
   );
 }
