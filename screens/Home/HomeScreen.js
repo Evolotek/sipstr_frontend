@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import CommonTextView from '../../components/CommonTextView';
 
 export default function Home() {
   return (
     <View style={styles.container}>
-     Home Screen
+     <CommonTextView>Home</CommonTextView>
     </View>
   );
 }
