@@ -1,17 +1,10 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8081';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from './APIClient';
 
 export const loginUser = async ({ email, password }) => {
   try {
-    const { data } = await api.post('/auth/login', { email, password });
+    const { data } = await apiClient.post('auth/login', { email, password });
+    await AsyncStorage.setItem('authToken', data.token);
     return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Login failed');
@@ -20,7 +13,7 @@ export const loginUser = async ({ email, password }) => {
 
 export const signup = async (userData) => {
   try {
-    const { data } = await api.post('/auth/signup', userData);
+    const { data } = await apiClient.post('auth/signup', userData);
     return data;
   } catch (error) {
     console.error('Signup error:', error);
@@ -28,18 +21,22 @@ export const signup = async (userData) => {
   }
 };
 
-export const sendOTP = async ({ mobileNumber }) => {
+export const sendOTP = async ({ email }) => {
   try {
-    const { data } = await api.post('/auth/otp/send', { mobileNumber });
+    const { data } = await apiClient.post('auth/otp/send', { identifier:  email });
     return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to send OTP');
   }
 };
 
-export const verifyOTP = async ({ mobileNumber, otp }) => {
+export const verifyOTP = async ({ email, otp }) => {
   try {
-    const { data } = await api.post('/auth/otp/verify', { mobileNumber, otp });
+    const { data } = await apiClient.post(
+      `auth/otp/verify?identifier=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`,
+      {} // sending an empty body
+    );
+   await AsyncStorage.setItem('authToken', data.token);
     return data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Invalid OTP');

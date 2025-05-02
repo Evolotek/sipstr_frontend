@@ -1,16 +1,17 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import CommonTextView from './CommonTextView';
 
 export default function CommonFieldError({ message }) {
   if (!message) return null;
-  return <Text style={styles.errorText}>{message}</Text>;
+  return <CommonTextView style={styles.errorText}>{message}</CommonTextView>;
 }
 
 const styles = StyleSheet.create({
   errorText: {
     color: 'red',
-    fontSize: 14,
+    fontSize: 12,
     marginBottom: 10,
-    fontFamily: 'Poppins_400Regular',
+    fontFamily: 'Poppins',
   },
 });

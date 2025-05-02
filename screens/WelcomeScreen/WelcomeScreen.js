@@ -65,19 +65,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 22,
-    fontWeight: "600",
+    fontSize: 27,
+    fontWeight: "400",
     marginBottom: 10,
     textAlign: "center",
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#333",
+    fontSize: 18,
+    fontWeight: "400",
+    color: "#000000",
     textAlign: "center",
     marginHorizontal: 20,
     marginBottom: 20,
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins"
   },
   buttonRow: {
     flexDirection: "row",

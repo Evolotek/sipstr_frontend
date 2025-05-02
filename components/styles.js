@@ -4,14 +4,13 @@ import { colors } from "./colors";
 
 export const globalStyles = StyleSheet.create({
   button: {
-    fontFamily: "Poppins-SemiBold",
     backgroundColor: colors.orange,
-    borderRadius: 12,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 50,
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    minHeight: 36,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     alignSelf: Platform.OS === "web" ? "center" : "stretch",
     width: Platform.OS === "web" ? "50%" : "100%",
     maxWidth: 360,
@@ -20,7 +19,7 @@ export const globalStyles = StyleSheet.create({
     }),
   },
   buttonText: {
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins",
     fontSize: 18,
     color: colors.white,
     textAlign: "center",
@@ -45,7 +44,7 @@ export const globalStyles = StyleSheet.create({
     }),
   },
   textView: {
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins",
     fontSize: 14,
     color: colors.black,
     ...(Platform.OS === "web" && {

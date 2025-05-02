@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useMutation } from 'react-query';
 import { loginUser } from '../../../api/authService';
 import Logo from '../../../components/Logo';
@@ -8,6 +8,7 @@ import CommonButton from '../../../components/CommonButton';
 import CommonError from "../../../components/CommonFieldError";
 import Toast from 'react-native-toast-message';
 import CommonTextInput from '../../../components/CommonTextField';
+import CommonTextView from '../../../components/CommonTextView';
  
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
@@ -52,7 +53,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Logo />
-      <Text style={styles.welcome}>Welcome</Text>
+      <CommonTextView style={styles.welcome}>Welcome</CommonTextView>
 
       <CommonTextInput
         placeholder="Enter Mobile Number or Email"
@@ -69,7 +70,7 @@ export default function LoginScreen({ navigation }) {
       />
       
       <TouchableOpacity>
-        <Text style={styles.forgot}>Forgot Password</Text>
+        <CommonTextView style={styles.forgot}>Forgot Password</CommonTextView>
       </TouchableOpacity>
 
       {formError ? <CommonError message={formError} /> : null} {/* 👈 Show error here */}
@@ -79,9 +80,9 @@ export default function LoginScreen({ navigation }) {
         onPress={handleLogin}
         style={styles.button}
       />
-      <Text style={styles.signupText}>
-        Don’t have an account? <TouchableOpacity onPress={handleSignUp}><Text style={styles.signupLink}>Signup</Text></TouchableOpacity>
-      </Text>
+      <CommonTextView style={styles.signupText}>
+        Don’t have an account? <TouchableOpacity onPress={handleSignUp}><CommonTextView style={styles.signupLink}>Signup</CommonTextView></TouchableOpacity>
+      </CommonTextView>
     </View>
   );
 }
@@ -94,10 +95,11 @@ const styles = StyleSheet.create({
     backgroundColor:'#ffffff'
   },
   welcome: {
-    fontFamily: 'Poppins_400Regular',
-    fontSize: 24,
+    fontFamily: 'Poppins',
+    fontSize: 28,
     textAlign: 'center',
-    marginVertical: 20
+    marginVertical: 20,
+    fontWeight: 400
   },
   input: {
     height: 46,
@@ -107,21 +109,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 20,
-    fontFamily: 'Poppins_400Regular',
+    fontFamily: 'Poppins',
     backgroundColor: '#fff'
   },
   forgot: {
+    fontFamily: 'Poppins',
     textAlign: 'right',
-    color: '#e65100',
-    marginBottom: 20
+    color: '#EA580C',
+    marginBottom: 20,
+    fontSize: 12,
   },
   signupText: {
+    fontSize: 12,
     textAlign: 'center',
     marginTop: 20,
     color: '#777'
   },
   signupLink: {
-    color: '#e65100',
-    fontWeight: 'bold'
+    color: '#EA580C',
+    fontWeight: '600'
   }
 });

@@ -12,14 +12,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import Logo from "../../../components/Logo";
 
-const VerifyOTPScreen = ({ navigation }) => {
-  const [otp, setOtp] = useState(["", "", "", ""]);
+const VerifyOTPScreen = ({ navigation, route }) => {
+  const [otp, setOtp] = useState(route?.params.split(''));
+  //const [otp, setOtp] = useState(["", "", "", ""]);
   const refs = [useRef(), useRef(), useRef(), useRef()];
   // Send OTP Mutation
   const sendOTPMutation = useMutation({
     mutationFn: sendOTP,
     onSuccess: (data) => {
-      if (data.success) {
+      if (data.otp) {
         Toast.show({ type: 'success', text1: "OTP sent successfully!" });
       } else {
         Toast.show({ type: 'error', text1: "Failed to send OTP" });
@@ -35,8 +36,9 @@ const VerifyOTPScreen = ({ navigation }) => {
   const verifyOTPMutation = useMutation({
     mutationFn: verifyOTP,
     onSuccess: (data) => {
-      if (data.success) {
-        navigation.navigate("MainTabs");
+      if (data.token) {
+        
+        navigation.navigate("Home");
       } else {
         Toast.show({ type: 'error', text1: "Failed to verify OTP" });
       }
@@ -49,7 +51,7 @@ const VerifyOTPScreen = ({ navigation }) => {
 
   useEffect(async () => {
     const userData = await AsyncStorage.getItem('user_data');
-    sendOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber });
+    sendOTPMutation.mutate({ email: JSON.parse(userData).email });
   }, []);
 
   const handleChange = (index, value) => {
@@ -69,14 +71,14 @@ const VerifyOTPScreen = ({ navigation }) => {
     }
   };
 
-  const validateAndSubmit =  async () => {
+  const validateAndSubmit = async () => {
     const joinedOTP = otp.join("");
-    if (joinedOTP.length < 4) {
-      Toast.show({ type: 'error', text1: "Please enter the full 4-digit OTP" });
+    if (joinedOTP.length < 6) {
+      Toast.show({ type: 'error', text1: "Please enter the full 6-digit OTP" });
       return;
     }
     const userData = await AsyncStorage.getItem('user_data');
-    verifyOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber, otp: joinedOTP });
+    verifyOTPMutation.mutate({ email: JSON.parse(userData).email, otp: joinedOTP });
   };
 
   return (
@@ -84,7 +86,7 @@ const VerifyOTPScreen = ({ navigation }) => {
       <Logo />
       <CommonTextView style={styles.heading}>Verify OTP</CommonTextView>
       <CommonTextView style={styles.instruction}>
-        Please enter the 4-digit code sent to your mobileNumber/email.
+        Please enter the 6-digit code sent to your mobileNumber/email.
       </CommonTextView>
 
       <View style={styles.otpRow}>
@@ -111,9 +113,10 @@ const VerifyOTPScreen = ({ navigation }) => {
         loading={verifyOTPMutation.isLoading}
       />
       <TouchableOpacity onPress={async () => {
-         const userData = await AsyncStorage.getItem('user_data');
-        sendOTPMutation.mutate({ mobileNumber: JSON.parse(userData).mobileNumber })}
-        }>
+        const userData = await AsyncStorage.getItem('user_data');
+        sendOTPMutation.mutate({ email: JSON.parse(userData).email })
+      }
+      }>
         <CommonTextView style={styles.resendLink}>
           Resend OTP
         </CommonTextView>
@@ -131,9 +134,10 @@ const styles = {
     padding: 24,                           // Padding around the edges
   },
   heading: {
-    fontSize: 24,                          // Main title size
-    fontFamily: "Poppins-SemiBold",       // Bold font
-    marginTop: 16,                         // Space from the top
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 24,
+    textAlign: 'center',
+    marginVertical: 20
   },
   instruction: {
     textAlign: "center",                   // Centered text

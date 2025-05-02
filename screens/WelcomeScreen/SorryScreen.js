@@ -25,9 +25,7 @@ const SorryScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Logo />
-      </View>
+      <Logo />
 
       <View style={styles.messageContainer}>
         <CommonTextView style={styles.title}>Sorry!</CommonTextView>
@@ -57,18 +55,19 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   title: {
-    fontSize: 22,
+    fontSize: 32,
     fontWeight: "600",
     marginBottom: 10,
+    color: "#000",
     textAlign: "center",
-    fontFamily: "Poppins-Bold"
+    fontFamily: "Poppins"
   },
   message: {
-    fontSize: 14,
-    color: "#333",
+    fontSize: 18,
+    color: "#000",
     textAlign: "center",
     marginHorizontal: 20,
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins"
   },
 });
 

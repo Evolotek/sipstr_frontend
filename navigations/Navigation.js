@@ -32,8 +32,8 @@ const AppNavigator = () => {
           )}
         </Stack.Screen>
         <Stack.Screen name="Home">
-          {({ navigation }) => (
-            < HomeScreen navigation={navigation} />
+          {({ navigation, route}) => (
+            <HomeScreen navigation={navigation} route={route}/>
           )}
         </Stack.Screen>
         <Stack.Screen name="SorryScreen" component={SorryScreen} />
@@ -41,7 +41,11 @@ const AppNavigator = () => {
         <Stack.Screen name="Addresses" component={AddressesScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="Categories" component={CategoriesScreen} />
-        <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
+        <Stack.Screen name="VerifyOTP">
+          {({ navigation, route}) => (
+            <VerifyOTPScreen navigation={navigation} route={route}/>
+          )}
+        </Stack.Screen>
         <Stack.Screen name="Cart" component={CartScreen} />
 
         {/* Bottom Tab Container */}

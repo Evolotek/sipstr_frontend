@@ -8,7 +8,7 @@ import { isAndroid, isWeb } from "../Utils/CommonUtils";
 //   ? "http://10.0.2.2:8080/"
 //   : "http://192.168.40.39:8080/";
 
-export const BASE_URL = "http://localhost:8080/";
+export const BASE_URL = "http://98.83.160.176:8080/";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, TouchableOpacity, ScrollView } from "react-native";
 import { useMutation } from 'react-query';
 import { signup } from "../../../api/authService";
 import Logo from "../../../components/Logo";
@@ -9,14 +9,15 @@ import AppleLogin from "./AppleLogin";
 import CommonError from "../../../components/CommonFieldError";
 import CommonTextInput from "../../../components/CommonTextField";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommonTextView from "../../../components/CommonTextView";
 
 export default function Signup({ navigation }) {
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullName: "gaura",
     mobileNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    email: "gaurav.agrawal0208@gmail.com  ",
+    password: "Pass@12345",
+    confirmPassword: "Pass@12345",
   });
 
   const [errors, setErrors] = useState({});
@@ -31,16 +32,16 @@ export default function Signup({ navigation }) {
     const { fullName, mobileNumber, email, password, confirmPassword } = formData;
 
     if (!fullName) newErrors.fullName = "Full name is required";
-    if (!mobileNumber) newErrors.mobileNumber = "Mobile number is required";
+  //  if (!mobileNumber) newErrors.mobileNumber = "Mobile number is required";
     if (!email) newErrors.email = "Email is required";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email && !emailRegex.test(email)) newErrors.email = "Invalid email address";
 
-    const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
-    if (mobileNumber && !phoneRegex.test(mobileNumber)) {
-      newErrors.mobileNumber = "Invalid phone number (+1XXXXXXXXXX or +974XXXXXXXX)";
-    }
+    // const phoneRegex = /^(\+1\d{10}|\+974\d{8})$/;
+    // if (mobileNumber && !phoneRegex.test(mobileNumber)) {
+    //   newErrors.mobileNumber = "Invalid phone number (+1XXXXXXXXXX or +974XXXXXXXX)";
+    // }
 
     if (!password) newErrors.password = "Password is required";
     else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
@@ -56,9 +57,9 @@ export default function Signup({ navigation }) {
   const signupMutation = useMutation({
     mutationFn: (payload) => signup(payload),
     onSuccess: (result) => {
-      if (result.success) {
+      if (result) {
         AsyncStorage.setItem("user_data", JSON.stringify(formData));
-        navigation.navigate("VerifyOTP");
+        navigation.navigate("VerifyOTP", result.otp);
       } else {
         Toast.show({ type: 'error', text1: result.message || 'Signup failed.' });
       }
@@ -76,7 +77,7 @@ export default function Signup({ navigation }) {
       password: formData.password,
       fullName: formData.fullName,
       mobileNumber: formData.mobileNumber,
-      roleEnum: "USER",
+      roleEnum: "CUSTOMER",
       otpSignup: true,
     };
 
@@ -86,9 +87,14 @@ export default function Signup({ navigation }) {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, backgroundColor: '#ffffff' }}>
       <Logo />
-      <Text style={{ fontSize: 24, fontWeight: '600', marginVertical: 20, fontFamily: 'Poppins_400Regular', textAlign: 'center' }}>
+      <CommonTextView style={{
+        fontFamily: 'Poppins_400Regular',
+        fontSize: 24,
+        textAlign: 'center',
+        marginVertical: 20
+      }}>
         Create Account
-      </Text>
+      </CommonTextView>
 
       <CommonTextInput placeholder="Enter Name" style={styles.input} onChangeText={(val) => handleChange("fullName", val)} />
       {errors.fullName && <CommonError message={errors.fullName} />}
@@ -112,14 +118,14 @@ export default function Signup({ navigation }) {
         disabled={signupMutation.isPending}
       />
 
-      <Text style={{ marginVertical: 10, textAlign: 'center' }}>
+      <CommonTextView style={{ marginVertical: 10, textAlign: 'center' }}>
         Already have an account?{" "}
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={{ color: '#f97316' }}>Login</Text>
+          <CommonTextView style={styles.loginLink}>Login</CommonTextView>
         </TouchableOpacity>
-      </Text>
+      </CommonTextView>
 
-      <Text style={{ color: '#aaa', marginVertical: 10, textAlign: 'center' }}>Or Register with</Text>
+      <CommonTextView style={{ color: '#aaa', marginVertical: 10, textAlign: 'center' }}>Or Register with</CommonTextView>
 
       <View style={{ gap: 20, alignItems: 'center' }}>
         <GoogleLogin />
@@ -131,20 +137,18 @@ export default function Signup({ navigation }) {
 
 const styles = {
   input: {
+    height: 46,
+    borderRadius: 15,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    width: '100%',
-    marginVertical: 5,
-    fontFamily: 'Poppins_400Regular'
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 20,
+    fontFamily: 'Poppins',
+    backgroundColor: '#fff'
   },
-  button: {
-    backgroundColor: '#f97316',
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    width: '100%',
-    marginVertical: 10
+  loginLink: {
+    color: '#EA580C',
+    fontWeight: '600'
   }
 };
