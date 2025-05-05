@@ -1,30 +1,32 @@
-import React from "react";
-import { TextInput } from "react-native";
-import { globalStyles } from "./styles";
-import { colors } from "./colors";
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
 
-const CommonTextField = ({
-  placeholder,
-  value,
-  onChangeText,
-  secureTextEntry = false,
-  style,
-  placeholderTextColor = colors.placeholder,
-}) => {
+export default function CommonTextInput({ style, placeholder, value, onChangeText, secureTextEntry = false }) {
   return (
     <TextInput
+      placeholder={placeholder}
       style={[
-        globalStyles.input,
-        { borderColor: colors.border, color: colors.text },
+        styles.input,
         style,
       ]}
-      placeholder={placeholder}
-      placeholderTextColor={placeholderTextColor}
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      placeholderTextColor="#999"
     />
   );
-};
+}
 
-export default CommonTextField;
+const styles = StyleSheet.create({
+  input: {
+    height: 46,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 20,
+    fontFamily: 'Poppins_400Regular',
+    backgroundColor: '#fff'
+  }
+});

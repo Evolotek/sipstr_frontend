@@ -1,149 +1,132 @@
-import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import CommonTextView from "../../../components/CommonTextView";
-import CommonTextField from "../../../components/CommonTextField";
-import CommonButton from "../../../components/CommonButton";
-import CommonAppNameLabel from "../../../components/CommonAppNameLabel";
-import { colors } from "../../../components/colors";
-import Utils from "../../../Utils/CommonUtils";
-import { useLoader } from "../../../Utils/LoaderContext";
-import { loginUser } from "../../../viewmodels/userViewModel";
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useMutation } from 'react-query';
+import { loginUser } from '../../../api/authService';
+import Logo from '../../../components/Logo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CommonButton from '../../../components/CommonButton';
+import CommonError from "../../../components/CommonFieldError";
+import Toast from 'react-native-toast-message';
+import CommonTextInput from '../../../components/CommonTextField';
+import CommonTextView from '../../../components/CommonTextView';
+ 
+export default function LoginScreen({ navigation }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [formError, setFormError] = useState(''); // 👈 track form error
 
-const LoginScreen = ({ navigation }) => {
-  const [emailPhoneInput, SetEmailPhoneInput] = useState("");
-  const [passwordInput, SetPasswordInput] = useState("");
-  const { setLoading } = useLoader();
+  const mutation = useMutation(loginUser, {
+    onSuccess: async (data) => {
+      await AsyncStorage.setItem('authToken', data.token);
+      Toast.show({ type: 'success', text1: 'Login successful!' });
+      setTimeout(() => navigation.navigate('Home'), 1500);
+    },
+    onError: (error) => {
+      Toast.show({ type: 'error', text1: error.message || 'Login failed.' });
+    }
+  });
 
-  const validateAndLogin = () => {
-    console.log("Login Btn Pressed");
-    const emailOrPhone = emailPhoneInput.trim();
-    const password = passwordInput.trim();
 
-    if (!emailOrPhone || !password) {
-      Utils.showToast("All fields are required.", "error");
+  const handleLogin = () => {
+    setFormError(''); // clear previous error
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (!username || (!emailRegex.test(username) && !phoneRegex.test(username))) {
+      setFormError('Please enter a valid email or mobile number.');
       return;
     }
 
-    if (
-      !Utils.isEmailValid(emailOrPhone) &&
-      !Utils.isPhoneValid(emailOrPhone)
-    ) {
-      Utils.showToast("Enter a valid email or 10-digit phone number.", "error");
-      return;
-    }
-    if (!Utils.isInternetConnected) {
-      Utils.showToast("Please connect to Internet!", "error");
+    if (!password || password.length < 6) {
+      setFormError('Password must be at least 6 characters long.');
       return;
     }
 
-    const loginRequest = {
-      email: emailOrPhone,
-      password: password,
-    };
-
-    handleLogin(loginRequest);
+    mutation.mutate({ email: username, password });
   };
 
-  const handleLogin = async (payload) => {
-    try {
-      setLoading(true);
-      const result = await loginUser(payload);
-      if (result.success) {
-        Utils.showToast("Login Success!");
-        navigation.navigate("MainTabs");
-      } else {
-        Utils.showToast(result.message, "error");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSignUp = () => {
+    navigation.navigate('SignUp');
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <CommonAppNameLabel fontSize={60} />
-      <CommonTextView style={styles.title}>Welcome</CommonTextView>
+    <View style={styles.container}>
+      <Logo />
+      <CommonTextView style={styles.welcome}>Welcome</CommonTextView>
 
-      <CommonTextField
-        placeholder="Enter Mobile Number/Email"
-        value={emailPhoneInput}
-        onChangeText={SetEmailPhoneInput}
-        style={styles.input}
+      <CommonTextInput
+        placeholder="Enter Mobile Number or Email"
+        value={username}
+        onChangeText={setUsername}
       />
-      <CommonTextField
+ 
+      <CommonTextInput
         placeholder="Enter Password"
-        secureTextEntry
-        value={passwordInput}
-        onChangeText={SetPasswordInput}
         style={styles.input}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
-
-      <TouchableOpacity
-        style={styles.forgotPasswordContainer}
-        onPress={() => navigation.navigate("ForgotPassword")}
-      >
-        <CommonTextView style={styles.forgotText}>
-          Forgot Password
-        </CommonTextView>
+      
+      <TouchableOpacity>
+        <CommonTextView style={styles.forgot}>Forgot Password</CommonTextView>
       </TouchableOpacity>
+
+      {formError ? <CommonError message={formError} /> : null} {/* 👈 Show error here */}
 
       <CommonButton
         title="Login"
-        onPress={validateAndLogin}
+        onPress={handleLogin}
         style={styles.button}
       />
-
-      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-        <CommonTextView style={styles.signupText}>
-          Don’t have an account?{" "}
-          <CommonTextView style={styles.signupLink}>Signup</CommonTextView>
-        </CommonTextView>
-      </TouchableOpacity>
-    </SafeAreaView>
+      <CommonTextView style={styles.signupText}>
+        Don’t have an account? <TouchableOpacity onPress={handleSignUp}><CommonTextView style={styles.signupLink}>Signup</CommonTextView></TouchableOpacity>
+      </CommonTextView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    gap: 16,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor:'#ffffff'
   },
-
-  title: {
-    fontSize: 26,
-    fontFamily: "Poppins-SemiBold",
-    marginTop: 10,
+  welcome: {
+    fontFamily: 'Poppins',
+    fontSize: 28,
+    textAlign: 'center',
+    marginVertical: 20,
+    fontWeight: 400
   },
   input: {
-    width: "100%",
+    height: 46,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 20,
+    fontFamily: 'Poppins',
+    backgroundColor: '#fff'
   },
-  forgotPasswordContainer: {
-    alignSelf: "flex-end",
-    marginRight: 8,
-  },
-  forgotText: {
-    color: colors.orange,
+  forgot: {
+    fontFamily: 'Poppins',
+    textAlign: 'right',
+    color: '#EA580C',
+    marginBottom: 20,
     fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
   },
   signupText: {
-    fontSize: 14,
-    fontFamily: "Poppins-Regular",
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#777'
   },
   signupLink: {
-    color: colors.orange,
-    fontFamily: "Poppins-SemiBold",
-  },
-  button: {
-    width: "100%",
-  },
+    color: '#EA580C',
+    fontWeight: '600'
+  }
 });
-
-export default LoginScreen;

@@ -6,7 +6,7 @@ export const saveToken = async (token) => {
 };
 
 export const getToken = async () => {
-  return await AsyncStorage.getItem("user_token");
+  return await AsyncStorage.getItem("authToken");
 };
 
 export const saveUserData = async (user) => {
