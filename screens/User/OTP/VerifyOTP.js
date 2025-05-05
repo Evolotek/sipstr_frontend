@@ -37,7 +37,6 @@ const VerifyOTPScreen = ({ navigation, route }) => {
     mutationFn: verifyOTP,
     onSuccess: (data) => {
       if (data.token) {
-        
         navigation.navigate("Home");
       } else {
         Toast.show({ type: 'error', text1: "Failed to verify OTP" });
