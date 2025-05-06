@@ -6,11 +6,13 @@ import CategoryList from './CategoryList';
 import ProductCard from './ProductCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useFavorites } from '../../Providers/FavoriteProvider';
 
 const CategoryScreen = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [favorites, setFavorites] = useState({});
+
+  const { favorites, toggleFavorite } = useFavorites();
 
   const { data: categories = [], isLoading: loadingCategories, error: categoryError } = useQuery({
     queryKey: ['categories'],
@@ -37,9 +39,6 @@ const CategoryScreen = () => {
     enabled: !!selectedCategory,
   });
 
-  const toggleFavorite = (id) => {
-    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,9 +76,11 @@ const CategoryScreen = () => {
                   item={item}
                   variant={item.variant}
                   isFavorite={!!favorites[item.variant.variantId]}
-                  onFavoriteToggle={toggleFavorite}
+                  onFavoriteToggle={() => toggleFavorite(item.variant.variantId)}
                   onPress={() => {
-                    navigation.navigate('ProductDetailScreen', { product: item, variant: item.variant });
+                    navigation.navigate('ProductDetailScreen', {
+                      product: item, variant: item.variant, isFavorite: favorites[item.variant.variantId],
+                    });
                   }}
                 />
               )}

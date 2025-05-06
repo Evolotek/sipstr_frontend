@@ -13,16 +13,27 @@ export const fetchCategories = async () => {
 
 // Example usage in your component
 export const fetchProductDetails = async (productId) => {
-    return await apiClient.get(`/products/${productId}`);
+    try {
+        const { data } = await apiClient.get(`/products/${productId}`);
+        return data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to send OTP');
+    }
 };
 
 export const fetchProductsByCategory = async (categoryId) => {
     if (!categoryId) throw new Error("Category ID is required");
-    return await apiClient.get(`/products`);
-   // return await apiClient.get(`/category/${categoryId}/products`);
+   // return await apiClient.get(`/products`);
+  return await apiClient.get(`/category/${categoryId}/products`);
 
 };
 
 export const fetchStores = async () => {
-    return await apiClient.get(`/stores`);
+    try {
+        const { data } = await apiClient.get('stores');
+        return data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to send OTP');
+    }
 };
+

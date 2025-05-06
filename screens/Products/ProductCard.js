@@ -1,16 +1,23 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import CommonTextView from '../../components/CommonTextView';
 
 const ProductCard = ({ item, isFavorite, variant, onFavoriteToggle, onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Image source={{ uri: item.image || `http://98.83.160.176:8080/${item.variant.thumbnailImageUrl}`}} style={styles.image} />
+      <Image source={{ uri: item.image || `http://98.83.160.176:8080/${item.variant.thumbnailImageUrl}` }} style={styles.image} />
       <View style={styles.details}>
-        <Text style={styles.name}>{item.productName}</Text>
-        <Text style={styles.brand}>{item.brand}</Text>
-        <Text style={styles.price}>From ${Math.min(...item.variantsDTO.map(v => v.unitPrice)).toFixed(2)}</Text>
+        <CommonTextView style={styles.name}>{item.productName} - {variant.packageName}</CommonTextView>
+        <CommonTextView style={styles.brand}>{item.brand}</CommonTextView>
+        <CommonTextView style={styles.price}>From ${Math.min(...item.variantsDTO.map(v => v.unitPrice)).toFixed(2)}</CommonTextView>
         <TouchableOpacity onPress={() => onFavoriteToggle(variant.variantId)}>
-          <Text style={[styles.favorite, isFavorite && styles.favorited]}>{isFavorite ? '❤️' : '🤍'}</Text>
+         <Ionicons 
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={24}
+            color={isFavorite ? 'red' : 'gray'}
+            style={styles.favorite}
+          />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -24,7 +31,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: 'bold' },
   brand: { fontSize: 14, color: 'gray' },
   price: { fontSize: 16, color: '#FF6600', fontWeight: '600' },
-  favorite: { fontSize: 18, textAlign: 'right', marginTop: 5 },
+  favorite: { fontSize: 18, CommonTextViewAlign: 'right', marginTop: 5 },
   favorited: { color: 'red' }
 });
 
