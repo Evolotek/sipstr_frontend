@@ -86,7 +86,7 @@ export default function App() {
                 <FavoriteProvider>
                 <NavigationContainer>
                     <Stack.Navigator screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="Welcome" component={WelcomeScreen} /> // No header footer 
+                        <Stack.Screen name="Welcome" component={WelcomeScreen} /> 
                         <Stack.Screen name="Login">
                             {({ navigation }) => (<LoginScreen navigation={navigation} />)}
                         </Stack.Screen>
@@ -97,7 +97,7 @@ export default function App() {
                         </Stack.Screen>
                         <Stack.Screen name="Home">
                             {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}> // With header footer 
+                                <ScreenWithLayout navigation={navigation}>  
                                     <HomeScreen />
                                 </ScreenWithLayout>
                             )}
