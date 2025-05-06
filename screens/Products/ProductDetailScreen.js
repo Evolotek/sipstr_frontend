@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isStoreClosedToday } from '../../Utils/store';
 import { CartContext } from '../../Providers/CartProvider';
 import CommonTextView from '../../components/CommonTextView';
-import { FavoriteContext, useFavorites } from '../../Providers/FavoriteProvider';
+import { useFavorites } from '../../Providers/FavoriteProvider';
 
 const CART_KEY = 'cart';
 const SIZES = ['Small', 'Medium', 'Large', 'Extra Large'];
