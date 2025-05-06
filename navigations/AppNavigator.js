@@ -16,6 +16,10 @@ import HomeScreen from "../screens/Home/HomeScreen";
 import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import VerifyOTPScreen from '../screens/User/OTP/VerifyOTP';
 import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
+import { CartContext, CartProvider } from '../Providers/CartProvider';
+import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
+import CartScreen from '../screens/Cart/CartScreen';
+import { FavoriteProvider } from '../Providers/FavoriteProvider';
 
 const SearchScreen = () => <Text style={styles.pageContent}>Search</Text>;
 const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;
@@ -23,7 +27,7 @@ const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 export const Header = ({ navigation }) => {
-    const cartCount = 0
+    const { cartCount } = useContext(CartContext);
 
     return (
         <View style={styles.header}>
@@ -40,6 +44,7 @@ export const Header = ({ navigation }) => {
         </View>
     );
 };
+
 
 const ScreenWithLayout = ({ children, navigation }) => (
     <View style={{ flex: 1 }}>
@@ -69,64 +74,76 @@ const FooterTabs = ({ navigation }) => (
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                    <Stack.Screen name="Login">
-                        {({ navigation }) => (<LoginScreen navigation={navigation} />)}
-                    </Stack.Screen>
-                    <Stack.Screen name="SignUp">
-                        {({ navigation }) => (
-                            < SignUpScreen navigation={navigation} />
-                        )}
-                    </Stack.Screen>
-                    <Stack.Screen name="Home">
-                        {({ navigation }) => (
-                            <ScreenWithLayout navigation={navigation}>
-                                <HomeScreen />
-                            </ScreenWithLayout>
-                        )}
-                    </Stack.Screen>
-                    <Stack.Screen name="Search">
-                        {({ navigation }) => (
-                            <ScreenWithLayout navigation={navigation}>
-                                <SearchScreen />
-                            </ScreenWithLayout>
-                        )}
-                    </Stack.Screen>
-                    <Stack.Screen name="Categories">
-                        {({ navigation }) => (
-                            <ScreenWithLayout navigation={navigation}>
-                                <CategoriesScreen />
-                            </ScreenWithLayout>
-                        )}
-                    </Stack.Screen>
-                    <Stack.Screen name="Profile">
-                        {({ navigation }) => (
-                            <ScreenWithLayout navigation={navigation}>
-                                <ProfileScreen />
-                            </ScreenWithLayout>
-                        )}
-                    </Stack.Screen>
+            <CartProvider>
+                <FavoriteProvider>
+                <NavigationContainer>
+                    <Stack.Navigator screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                        <Stack.Screen name="Login">
+                            {({ navigation }) => (<LoginScreen navigation={navigation} />)}
+                        </Stack.Screen>
+                        <Stack.Screen name="SignUp">
+                            {({ navigation }) => (
+                                < SignUpScreen navigation={navigation} />
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="Home">
+                            {({ navigation }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <HomeScreen />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="Search">
+                            {({ navigation }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <SearchScreen />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="Categories">
+                            {({ navigation }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <CategoriesScreen />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="Profile">
+                            {({ navigation }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <ProfileScreen />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
 
-                    <Stack.Screen name="CartScreen">
-                        {({ navigation }) => (
-                            <ScreenWithLayout navigation={navigation}>
-                                <CartScreen navigation={navigation} />
-                            </ScreenWithLayout>
-                        )}
-                    </Stack.Screen>
-                    <Stack.Screen name="SorryScreen" component={SorryScreen} />
-                    <Stack.Screen name="AccountSettings" component={AccountSettings} />
-                    <Stack.Screen name="Addresses" component={AddressesScreen} />
-                    <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-                    <Stack.Screen name="VerifyOTP">
-                        {({ navigation, route }) => (
-                            <VerifyOTPScreen navigation={navigation} route={route} />
-                        )}
-                    </Stack.Screen>
-                </Stack.Navigator>
-            </NavigationContainer>
+                        <Stack.Screen name="CartScreen">
+                            {({ navigation }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <CartScreen navigation={navigation} />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="SorryScreen" component={SorryScreen} />
+                        <Stack.Screen name="AccountSettings" component={AccountSettings} />
+                        <Stack.Screen name="Addresses" component={AddressesScreen} />
+                        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+                        <Stack.Screen name="VerifyOTP">
+                            {({ navigation, route }) => (
+                                <VerifyOTPScreen navigation={navigation} route={route} />
+                            )}
+                        </Stack.Screen>
+                        <Stack.Screen name="ProductDetailScreen">
+                            {({ navigation, route }) => (
+                                <ScreenWithLayout navigation={navigation}>
+                                    <ProductDetailScreen navigation={navigation} route={route} />
+                                </ScreenWithLayout>
+                            )}
+                        </Stack.Screen>
+                         
+                    </Stack.Navigator>
+                </NavigationContainer>
+                </FavoriteProvider>
+            </CartProvider>
         </QueryClientProvider>
     );
 }
