@@ -3,21 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
-// Screens
+// Welcome Screen
 import WelcomeScreen from "../screens/WelcomeScreen/WelcomeScreen";
+
+//Auth Screens
 import LoginScreen from "../screens/User/Login/LoginScreen";
 import SignUpScreen from "../screens/User/Registration/SignUpScreen";
 import SorryScreen from "../screens/WelcomeScreen/SorryScreen";
 import AddressesScreen from "../screens/User/AccountSettings/AddressesScreen";
 import ForgotPasswordScreen from "../screens/User/ForgotPassword/ForgotPassword";
-import HomeScreen from "../screens/Home/HomeScreen";
-import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import VerifyOTPScreen from '../screens/User/OTP/VerifyOTP';
-import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
+
+//Home
+import HomeScreen from "../screens/Home/HomeScreen";
+
+//Categories
+import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
 import CartScreen from '../screens/Cart/CartScreen';
+
+//Profile
+import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
 
 const SearchScreen = () => <Text style={styles.pageContent}>Search</Text>;
 const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;
@@ -27,7 +34,7 @@ import { CartContext, CartProvider } from '../Providers/CartProvider';
 import { FavoriteProvider } from '../Providers/FavoriteProvider';
 
 const Stack = createNativeStackNavigator();
-const queryClient = new QueryClient();
+
 export const Header = ({ navigation }) => {
     const { cartCount } = useContext(CartContext);
 
@@ -75,12 +82,11 @@ const FooterTabs = ({ navigation }) => (
 
 export default function App() {
     return (
-        <QueryClientProvider client={queryClient}>
             <CartProvider>
                 <FavoriteProvider>
                 <NavigationContainer>
                     <Stack.Navigator screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                        <Stack.Screen name="Welcome" component={WelcomeScreen} /> // No header footer 
                         <Stack.Screen name="Login">
                             {({ navigation }) => (<LoginScreen navigation={navigation} />)}
                         </Stack.Screen>
@@ -91,7 +97,7 @@ export default function App() {
                         </Stack.Screen>
                         <Stack.Screen name="Home">
                             {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
+                                <ScreenWithLayout navigation={navigation}> // With header footer 
                                     <HomeScreen />
                                 </ScreenWithLayout>
                             )}
@@ -146,7 +152,6 @@ export default function App() {
                 </NavigationContainer>
                 </FavoriteProvider>
             </CartProvider>
-        </QueryClientProvider>
     );
 }
 
