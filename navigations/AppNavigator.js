@@ -4,25 +4,27 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { QueryClient, QueryClientProvider } from 'react-query';
+
+// Screens
 import WelcomeScreen from "../screens/WelcomeScreen/WelcomeScreen";
 import LoginScreen from "../screens/User/Login/LoginScreen";
 import SignUpScreen from "../screens/User/Registration/SignUpScreen";
 import SorryScreen from "../screens/WelcomeScreen/SorryScreen";
 import AddressesScreen from "../screens/User/AccountSettings/AddressesScreen";
 import ForgotPasswordScreen from "../screens/User/ForgotPassword/ForgotPassword";
-
-// Screens
 import HomeScreen from "../screens/Home/HomeScreen";
 import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import VerifyOTPScreen from '../screens/User/OTP/VerifyOTP';
 import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
-import { CartContext, CartProvider } from '../Providers/CartProvider';
 import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
 import CartScreen from '../screens/Cart/CartScreen';
-import { FavoriteProvider } from '../Providers/FavoriteProvider';
 
 const SearchScreen = () => <Text style={styles.pageContent}>Search</Text>;
 const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;
+
+// Contexts
+import { CartContext, CartProvider } from '../Providers/CartProvider';
+import { FavoriteProvider } from '../Providers/FavoriteProvider';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();

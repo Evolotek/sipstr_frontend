@@ -2,17 +2,15 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import CommonTextView from "../../components/CommonTextView";
 import CommonButton from "../../components/CommonButton";
-import { globalStyles } from "../../components/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CommonAppNameLabel from "../../components/CommonAppNameLabel";
 import { colors } from "../../components/colors";
-import { getUserData } from "../../Utils/StorageHelper";
 import Logo from "../../components/Logo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = ({ navigation }) => {
   const navigateToHome = async () => {
-    var user = await getUserData();
-    var screenName = user ? "MainTabs" : "Login";
+    const authToken = await AsyncStorage.getItem('authToken');
+    var screenName = authToken ? "Home" : "Login";
     navigation.reset({
       index: 0,
       routes: [{ name: screenName }],
