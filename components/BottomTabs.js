@@ -1,5 +1,5 @@
 import React from "react";
-import { Ionicons, Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../components/colors";
 import { useNavigationState } from "@react-navigation/native";
 import { TouchableOpacity, View } from "react-native";
