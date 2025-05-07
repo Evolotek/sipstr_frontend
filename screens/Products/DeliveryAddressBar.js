@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ionicons import
+import CommonTextView from '../../components/CommonTextView';
 
 const DeliveryAddressBar = ({ onAddressChange }) => {
   const [address, setAddress] = useState('New York, NY');
@@ -15,11 +16,11 @@ const DeliveryAddressBar = ({ onAddressChange }) => {
     <View style={styles.container}>
       <View style={styles.addressContainer}>
         <Ionicons name="location-outline" size={18} color="#EA580C" />
-        <Text style={styles.addressText}> Delivering to: {address}</Text>
+        <CommonTextView style={styles.addressText}> Delivering to: {address}</CommonTextView>
       </View>
 
       <TouchableOpacity onPress={handleChange}>
-        <Text style={styles.changeText}>Change</Text>
+        <CommonTextView style={styles.changeText}>Change</CommonTextView>
       </TouchableOpacity>
     </View>
   );
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#FFD8C8',
-    fontFamily: 'Poppins'
   },
   addressContainer: {
     flexDirection: 'row',

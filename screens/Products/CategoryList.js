@@ -2,12 +2,12 @@ import React from 'react';
 import {
   View,
   TouchableOpacity,
-  Text,
   StyleSheet,
   ScrollView,
   Image,
   Dimensions,
 } from 'react-native';
+import CommonTextView from '../../components/CommonTextView';
 
 const screenWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = screenWidth / 4; // 4 icons per screen
@@ -30,14 +30,14 @@ const CategoryList = ({ categories, selected, onSelect }) => {
             >
               <Image source={cat.imageUrl} style={styles.icon} resizeMode="contain" />
             </View>
-            <Text
+            <CommonTextView
               style={[
                 styles.label,
                 selected === cat.categoryId && styles.selectedLabel,
               ]}
             >
               {cat.categoryName}
-            </Text>
+            </CommonTextView>
             {selected === cat.categoryId && <View style={styles.underline} />}
           </TouchableOpacity>
         ))}

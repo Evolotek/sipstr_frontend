@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, FlatList, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useQuery, useInfiniteQuery } from 'react-query';
 import { fetchCategories, fetchProductsByCategory } from '../../api/categoryService';
 import CategoryList from './CategoryList';
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useFavorites } from '../../Providers/FavoriteProvider';
 import DeliveryAddressBar from './DeliveryAddressBar';
+import CommonTextView from '../../components/CommonTextView';
 
 const CategoryScreen = () => {
   const navigation = useNavigation();
@@ -49,21 +50,21 @@ const CategoryScreen = () => {
       {loadingCategories ? (
         <ActivityIndicator size="large" color="#FF6600" />
       ) : categoryError ? (
-        <Text style={styles.error}>Failed to load categories.</Text>
+        <CommonTextView style={styles.error}>Failed to load categories.</CommonTextView>
       ) : (
         <CategoryList categories={categories} selected={selectedCategory} onSelect={setSelectedCategory} />
       )}
 
       {selectedCategory && (
         <>
-          <Text style={styles.subtitle}>
+          <CommonTextView style={styles.subtitle}>
             {categories.find((cat) => cat.categoryId === selectedCategory)?.categoryName || 'Category'}
-          </Text>
+          </CommonTextView>
 
           {loadingProducts ? (
             <ActivityIndicator size="small" color="#FF6600" />
           ) : productError ? (
-            <Text style={styles.error}>Failed to load products.</Text>
+            <CommonTextView style={styles.error}>Failed to load products.</CommonTextView>
           ) : (
             <FlatList
               style={styles.productList}
@@ -94,7 +95,7 @@ const CategoryScreen = () => {
               }}
               onEndReachedThreshold={0.5}
               ListFooterComponent={isFetchingNextPage ? <ActivityIndicator size="small" color="#FF6600" /> : null}
-              ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No products found.</Text>}
+              ListEmptyComponent={<CommonTextView style={{ textAlign: 'center', marginTop: 20 }}>No products found.</CommonTextView>}
             />
           )}
         </>
@@ -104,7 +105,7 @@ const CategoryScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1},
   title: { fontSize: 22, fontWeight: 'bold' },
   subtitle: { fontSize: 20, paddingHorizontal: 16, fontWeight: '600', marginVertical: 12 },
   error: { color: 'red', marginVertical: 10 },

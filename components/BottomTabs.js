@@ -68,7 +68,6 @@ const styles = {
     justifyContent: "center",
   },
   footerText: {
-    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     marginTop: 2,
   },
