@@ -7,6 +7,7 @@ import ProductCard from './ProductCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useFavorites } from '../../Providers/FavoriteProvider';
+import DeliveryAddressBar from './DeliveryAddressBar';
 
 const CategoryScreen = () => {
   const navigation = useNavigation();
@@ -40,9 +41,10 @@ const CategoryScreen = () => {
   });
 
 
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Categories</Text>
+      <DeliveryAddressBar navigation={navigation} onAddressChange={(newAddress) => console.log('Address changed to:', newAddress)} />
 
       {loadingCategories ? (
         <ActivityIndicator size="large" color="#FF6600" />
@@ -64,6 +66,7 @@ const CategoryScreen = () => {
             <Text style={styles.error}>Failed to load products.</Text>
           ) : (
             <FlatList
+              style={styles.productList}
               data={data?.pages.flatMap((page) =>
                 page.data.content.flatMap(product =>
                   product.variantsDTO.map(variant => ({ ...product, variant }))
@@ -101,10 +104,11 @@ const CategoryScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1 },
   title: { fontSize: 22, fontWeight: 'bold' },
-  subtitle: { fontSize: 18, fontWeight: '600', marginVertical: 12 },
+  subtitle: { fontSize: 20, paddingHorizontal: 16, fontWeight: '600', marginVertical: 12 },
   error: { color: 'red', marginVertical: 10 },
+  productList: { paddingHorizontal: 16 }
 });
 
 export default CategoryScreen;

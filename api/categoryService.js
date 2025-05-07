@@ -37,3 +37,12 @@ export const fetchStores = async () => {
     }
 };
 
+export const fetchFavorites = async () => {
+    const { data } = await apiClient.get('/favorites');
+    return data; // expects an array of variantIds
+  };
+  
+  export const toggleFavoriteVariant = async (variantId) => {
+    const { data } = await apiClient.post('/favorites/toggle', { variantId });
+    return data;
+  };
