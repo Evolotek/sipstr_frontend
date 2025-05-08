@@ -1,5 +1,16 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Dimensions,
+} from 'react-native';
+import CommonTextView from '../../components/CommonTextView';
+
+const screenWidth = Dimensions.get('window').width;
+const ITEM_WIDTH = screenWidth / 4; // 4 icons per screen
 
 const CategoryList = ({ categories, selected, onSelect }) => {
   return (
@@ -9,9 +20,25 @@ const CategoryList = ({ categories, selected, onSelect }) => {
           <TouchableOpacity
             key={cat.categoryId}
             onPress={() => onSelect(cat.categoryId)}
-            style={[styles.button, selected === cat.categoryId && styles.active]}
+            style={[styles.itemContainer, { width: ITEM_WIDTH }]}
           >
-            <Text style={styles.text}>{cat.categoryName}</Text>
+            <View
+              style={[
+                styles.iconWrapper,
+                selected === cat.categoryId && styles.activeIconWrapper,
+              ]}
+            >
+              <Image source={cat.imageUrl} style={styles.icon} resizeMode="contain" />
+            </View>
+            <CommonTextView
+              style={[
+                styles.label,
+                selected === cat.categoryId && styles.selectedLabel,
+              ]}
+            >
+              {cat.categoryName}
+            </CommonTextView>
+            {selected === cat.categoryId && <View style={styles.underline} />}
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -21,21 +48,45 @@ const CategoryList = ({ categories, selected, onSelect }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 12,
+    margin: 12,
+    fontFamily: 'Poppins'
   },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: '#ccc',
-    marginRight: 10, // spacing between categories
+  itemContainer: {
+    alignItems: 'center',
   },
-  active: {
+  iconWrapper: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#FF6600',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  text: {
-    color: '#fff',
+  activeIconWrapper: {
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    tintColor: '#fff',
+  },
+  label: {
+    marginTop: 6,
+    color: '#444',
     fontWeight: '500',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  selectedLabel: {
+    color: '#FF6600',
+  },
+  underline: {
+    marginTop: 2,
+    height: 2,
+    width: '80%',
+    backgroundColor: '#FF6600',
+    borderRadius: 1,
   },
 });
 
