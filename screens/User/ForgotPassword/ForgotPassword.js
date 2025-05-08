@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import Utils from "../../../Utils/CommonUtils";
 import CommonButton from "../../../components/CommonButton";
 import CommonTextField from "../../../components/CommonTextField";
-import CommonAppNameLabel from "../../../components/CommonAppNameLabel";
+import Logo from "../../../components/Logo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../../components/colors";
 import HeaderBar from "../../../components/HeaderBar";
@@ -14,8 +14,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
 
   const handleResetPassword = () => {
+    console.log("test");
     const trimmed = emailOrPhone.trim();
-    if (!Utils.isEmailValid(trimmed) && !Utils.isPhoneValid(trimmed)) {
+    if (!trimmed) {
+      Utils.showToast("Please enter email or phone.", "error");
+      return;
+    } else if (!Utils.isEmailValid(trimmed) && !Utils.isPhoneValid(trimmed)) {
       Utils.showToast("Enter a valid email or 10-digit phone number.", "error");
       return;
     }
@@ -27,7 +31,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       <HeaderBar navigation={navigation} title="Forgot Password" />
 
       <ScrollView contentContainerStyle={styles.container}>
-        <CommonAppNameLabel fontSize={60} />
+        <Logo />
 
         <CommonTextView
           style={[globalStyles.textViewSemiBold, { fontSize: 20 }]}
@@ -52,6 +56,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.white,
+    justifyContent: "center",
+    padding: 30,
   },
   container: {
     alignItems: "center",

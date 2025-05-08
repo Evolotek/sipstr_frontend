@@ -76,4 +76,38 @@ export class UserModel {
       expiresIn: data.expiresIn,
     });
   }
+
+  static fromProfileResponse(data) {
+    return new UserModel({
+      id: data.id,
+      uuid: data.uuid,
+      fullName: data.fullName,
+      email: data.email,
+      mobileNumber: data.mobileNumber,
+      emailVerified: data.emailVerified,
+      mobileVerified: data.mobileVerified,
+      accountStatus: data.accountStatus,
+      role: data.role?.name ?? "CUSTOMER",
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    });
+  }
+
+  static fromStorage(data) {
+    return new UserModel({
+      id: data.id,
+      uuid: data.uuid,
+      fullName: data.fullName,
+      email: data.email,
+      mobileNumber: data.mobileNumber,
+      isActive: data.isActive,
+      emailVerified: data.emailVerified,
+      mobileVerified: data.mobileVerified,
+      accountStatus: data.accountStatus,
+      role: data.role,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      expiresIn: data.expiresIn,
+    });
+  }
 }

@@ -11,20 +11,32 @@ import WelcomeScreen from "../screens/WelcomeScreen/WelcomeScreen";
 import LoginScreen from "../screens/User/Login/LoginScreen";
 import SignUpScreen from "../screens/User/Registration/SignUpScreen";
 import SorryScreen from "../screens/WelcomeScreen/SorryScreen";
-import AddressesScreen from "../screens/User/AccountSettings/AddressesScreen";
 import ForgotPasswordScreen from "../screens/User/ForgotPassword/ForgotPassword";
-import VerifyOTPScreen from '../screens/User/OTP/VerifyOTP';
+import VerifyOTPScreen from "../screens/User/OTP/VerifyOTP";
 
 //Home
 import HomeScreen from "../screens/Home/HomeScreen";
 
 //Categories
-import CategoriesScreen from '../screens/Products/CategoriesScreen';
-import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
-import CartScreen from '../screens/Cart/CartScreen';
+import CategoriesScreen from "../screens/Products/CategoriesScreen";
+import ProductDetailScreen from "../screens/Products/ProductDetailScreen";
+import CartScreen from "../screens/Cart/CartScreen";
 
 //Profile
-import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
+import AccountSettings from "../screens/User/AccountSettings/AccountSettings";
+import EditProfile from "../screens/User/Profile/EditProfile";
+
+//Address
+import AddressesScreen from "../screens/User/Address/AddressesScreen";
+import AddAddressScreen from "../screens/User/Address/AddAddressScreen";
+
+//Order
+import OrderHistory from "../screens/Orders/OrderHistory";
+import OrderHistoryDetailsScreen from "../screens/Orders/OrderHistoryDetailsScreen";
+import OrderTrackingScreen from "../screens/Orders/OrderTracking";
+
+//Favourite
+import WishListScreen from "../screens/WishList/WishListScreen";
 
 const SearchScreen = () => <Text style={styles.pageContent}>Search</Text>;
 const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;

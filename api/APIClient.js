@@ -8,7 +8,7 @@ import { isAndroid, isWeb } from "../Utils/CommonUtils";
 //   ? "http://10.0.2.2:8080/"
 //   : "http://192.168.40.39:8080/";
 
-export const BASE_URL = "http://localhost:8080/";
+export const BASE_URL = "http://98.83.160.176:8080/"; //"http://localhost:8080/";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -21,6 +21,7 @@ const apiClient = axios.create({
 // Add token to each request
 apiClient.interceptors.request.use(async (config) => {
   const token = await getToken();
+  console.log("Token from storage: " + token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
