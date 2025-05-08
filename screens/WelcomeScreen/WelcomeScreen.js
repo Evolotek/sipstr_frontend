@@ -8,11 +8,12 @@ import CommonAppNameLabel from "../../components/CommonAppNameLabel";
 import { colors } from "../../components/colors";
 import { getUserData } from "../../Utils/StorageHelper";
 import Logo from "../../components/Logo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = ({ navigation }) => {
   const navigateToHome = async () => {
-    var user = await getUserData();
-    var screenName = user ? "MainTabs" : "Login";
+    var authToken = await AsyncStorage.getItem('authToken');
+    var screenName = authToken ? "Home" : "Login";
     navigation.reset({
       index: 0,
       routes: [{ name: screenName }],
