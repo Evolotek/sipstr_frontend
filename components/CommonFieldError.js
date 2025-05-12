@@ -10,7 +10,8 @@ export default function CommonFieldError({ message }) {
 const styles = StyleSheet.create({
   errorText: {
     color: 'red',
-    fontSize: 12,
+    fontSize: 14,
+    fontWeight: '600',
     marginBottom: 16,
     paddingHorizontal: 16,
     fontFamily: 'Poppins',
