@@ -11,19 +11,33 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { CartContext } from '../../Providers/CartProvider';
+import FrequentlyOrdered from './FrequentlyOrdered';
+import { ScrollView } from 'react-native-web';
+import DeliveryAddressBar from '../../components/DeliveryAddressBar';
+import { useCoupon } from '../../Providers/CouponProvider';
 
 const TAX_RATE = 0.14;
 
-const CartScreen = () => {
-  const { updateCart } = useContext(CartContext);
+const CartScreen = ({ navigation }) => {
+  // Inside CartScreen
+  const { updateCart, cartCount, cartVersion } = useContext(CartContext);
+  const { appliedCoupon, setAppliedCoupon } = useCoupon();
+
 
   const [cartItems, setCartItems] = useState([]);
   const [promoCode, setPromoCode] = useState('');
   const isFocused = useIsFocused();
 
+  // useEffect becomes:
   useEffect(() => {
-    if (isFocused) loadCart();
-  }, [isFocused]);
+    loadCart();
+  }, [isFocused, cartCount, cartVersion]); // <-- Add cartVersion here
+
+  // useEffect becomes:
+  useEffect(() => {
+    if (appliedCoupon)
+      setPromoCode(appliedCoupon.code)
+  }, [appliedCoupon]); // <-- Add cartVersion here
 
   const loadCart = async () => {
     const data = await AsyncStorage.getItem('cart');
@@ -53,12 +67,17 @@ const CartScreen = () => {
     saveCart(updated);
   };
 
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setPromoCode("");
+  }
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
   const tax = subtotal * TAX_RATE;
-  const total = subtotal + tax;
+  const discount = appliedCoupon ? subtotal * (appliedCoupon.discount / 100) : 0;
+  const total = subtotal + tax - discount;
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -93,39 +112,46 @@ const CartScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Shopping Cart ({cartItems.length} items)</Text>
+    <>
+      <DeliveryAddressBar navigation={navigation} onAddressChange={(newAddress) => console.log('Address changed to:', newAddress)} />
 
-      <FlatList
-        data={cartItems}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Shopping Cart ({cartItems.length} items)</Text>
 
-      <View style={styles.promoRow}>
-        <TextInput
-          placeholder="Enter promo code"
-          style={styles.promoInput}
-          value={promoCode}
-          onChangeText={setPromoCode}
+        <FlatList
+          data={cartItems}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
         />
-        <TouchableOpacity style={styles.applyBtn}>
-          <Text style={{ color: '#fff' }}>Apply</Text>
+
+        <View style={styles.promoRow}>
+          <TextInput
+            placeholder="Enter promo code"
+            style={styles.promoInput}
+            value={promoCode}
+            onChangeText={setPromoCode}
+          />
+          {appliedCoupon ? (<TouchableOpacity style={styles.applyBtn} onPress={() => removeCoupon()}>
+            <Text style={{ color: '#fff' }}>Remove</Text>
+          </TouchableOpacity>) : (<TouchableOpacity style={styles.applyBtn} onPress={() => navigation.navigate("CouponScreen")}>
+            <Text style={{ color: '#fff' }}>Apply</Text>
+          </TouchableOpacity>)}
+        </View>
+
+        <View style={styles.summary}>
+          <Text style={styles.summaryText}>Subtotal: ${subtotal.toFixed(2)}</Text>
+          <Text style={styles.summaryText}>Tax: ${tax.toFixed(2)}</Text>
+          <Text style={[styles.summaryText, { fontWeight: 'bold' }]}>Total: ${total.toFixed(2)}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.checkoutBtn}>
+          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+            Proceed to Checkout
+          </Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.summary}>
-        <Text style={styles.summaryText}>Subtotal: ${subtotal.toFixed(2)}</Text>
-        <Text style={styles.summaryText}>Tax: ${tax.toFixed(2)}</Text>
-        <Text style={[styles.summaryText, { fontWeight: 'bold' }]}>Total: ${total.toFixed(2)}</Text>
-      </View>
-
-      <TouchableOpacity style={styles.checkoutBtn}>
-        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
-          Proceed to Checkout
-        </Text>
-      </TouchableOpacity>
-    </View>
+        <FrequentlyOrdered />
+      </ScrollView>
+    </>
   );
 };
 

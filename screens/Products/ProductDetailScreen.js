@@ -14,6 +14,7 @@ import { isStoreClosedToday } from '../../Utils/store';
 import { CartContext } from '../../Providers/CartProvider';
 import CommonTextView from '../../components/CommonTextView';
 import { useFavorites } from '../../Providers/FavoriteProvider';
+import DeliveryAddressBar from '../../components/DeliveryAddressBar';
 
 const CART_KEY = 'cart';
 const SIZES = ['Small', 'Medium', 'Large', 'Extra Large'];
@@ -108,105 +109,114 @@ const ProductDetailScreen = ({ navigation, route }) => {
   if (productLoading || storesLoading) return <CommonTextView>Loading...</CommonTextView>;
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: product.image }} style={styles.image} resizeMode="contain" />
+    <>
+      <DeliveryAddressBar navigation={navigation} onAddressChange={(newAddress) => console.log('Address changed to:', newAddress)} />
 
-        <TouchableOpacity
-          onPress={() => toggleFavorite(selectedVariant.variantId)}
-          style={styles.favoriteIcon}
-        >
-          <Ionicons
-            name={favorite ? 'heart' : 'heart-outline'}
-            size={24}
-            color={favorite ? 'red' : 'gray'}
-          />
-        </TouchableOpacity>
-      </View>
+      <ScrollView>
 
-      <CommonTextView style={styles.name}>{product.productName}</CommonTextView>
-      <CommonTextView style={styles.price}>${selectedVariant.unitPrice.toFixed(2)}</CommonTextView>
+        <View style={styles.container}>
 
-      <CommonTextView style={styles.sectionTitle}>Select Size</CommonTextView>
-      <View style={styles.sizeRow}>
-        {SIZES.map((size) => (
-          <TouchableOpacity
-            key={size}
-            onPress={() => setSelectedSize(size)}
-            style={[styles.sizeButton, selectedSize === size && styles.selectedSize]}>
-            <CommonTextView>{size}</CommonTextView>
-          </TouchableOpacity>
-        ))}
-      </View>
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: product.image }} style={styles.image} resizeMode="contain" />
 
-      <CommonTextView style={styles.sectionTitle}>Select Quantity</CommonTextView>
-      {quantity === 0 ? (
-        <TouchableOpacity
-          style={styles.addToCartBtn}
-          onPress={() => updateQuantity(1)}>
-          <CommonTextView style={styles.addToCartText}>Add to Cart</CommonTextView>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.quantityRow}>
-          <TouchableOpacity onPress={() => updateQuantity(Math.max(0, quantity - 1))} style={styles.qtyBtn}>
-            <CommonTextView>-</CommonTextView>
-          </TouchableOpacity>
-          <CommonTextView>{quantity}</CommonTextView>
-          <TouchableOpacity onPress={() => updateQuantity(quantity + 1)} style={styles.qtyBtn}>
-            <CommonTextView>+</CommonTextView>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity
+              onPress={() => toggleFavorite(selectedVariant.variantId)}
+              style={styles.favoriteIcon}
+            >
+              <Ionicons
+                name={favorite ? 'heart' : 'heart-outline'}
+                size={24}
+                color={favorite ? 'red' : 'gray'}
+              />
+            </TouchableOpacity>
+          </View>
 
-      <CommonTextView style={styles.sectionTitle}>Select Store</CommonTextView>
-      {stores.map((store, idx) => {
-        const isClosed = isStoreClosedToday(store);
-        return (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => !isClosed && setSelectedStore(store.storeName)}
-            style={[
-              styles.storeCard,
-              selectedStore === store.storeName && styles.selectedStore,
-              isClosed && styles.closedStore,
-            ]}
-            disabled={isClosed}
-          >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <CommonTextView style={styles.storeName}>{store.storeName}</CommonTextView>
-              <CommonTextView>Rating: {store.rating}</CommonTextView>
+          <CommonTextView style={styles.name}>{product.productName}</CommonTextView>
+          <CommonTextView style={styles.price}>${selectedVariant.unitPrice.toFixed(2)}</CommonTextView>
+
+          <CommonTextView style={styles.sectionTitle}>Select Size</CommonTextView>
+          <View style={styles.sizeRow}>
+            {SIZES.map((size) => (
+              <TouchableOpacity
+                key={size}
+                onPress={() => setSelectedSize(size)}
+                style={[styles.sizeButton, selectedSize === size && styles.selectedSize]}>
+                <CommonTextView>{size}</CommonTextView>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <CommonTextView style={styles.sectionTitle}>Select Quantity</CommonTextView>
+          {quantity === 0 ? (
+            <TouchableOpacity
+              style={styles.addToCartBtn}
+              onPress={() => updateQuantity(1)}>
+              <CommonTextView style={styles.addToCartText}>Add to Cart</CommonTextView>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.quantityRow}>
+              <TouchableOpacity onPress={() => updateQuantity(Math.max(0, quantity - 1))} style={styles.qtyBtn}>
+                <CommonTextView>-</CommonTextView>
+              </TouchableOpacity>
+              <CommonTextView>{quantity}</CommonTextView>
+              <TouchableOpacity onPress={() => updateQuantity(quantity + 1)} style={styles.qtyBtn}>
+                <CommonTextView>+</CommonTextView>
+              </TouchableOpacity>
             </View>
-            <CommonTextView style={styles.storeMeta}>Delivery Radius: {store.deliveryRadiusKm} km</CommonTextView>
-            <CommonTextView style={styles.storeMeta}>Min Order: ${store.minimumOrderAmount.toFixed(2)}</CommonTextView>
-            <CommonTextView style={styles.storeMeta}>Accepting Orders: {store.isCurrentlyAcceptingOrders ? 'Yes' : 'No'}</CommonTextView>
-          </TouchableOpacity>
-        );
-      })}
-      <CommonTextView style={{ "fontWeight": 600 }}>Product details:</CommonTextView>
-      <View style={styles.detailsGrid}>
-        <View style={styles.detailBox}><CommonTextView style={styles.details}>Volume: {selectedVariant.volume}</CommonTextView></View>
-        <View style={styles.detailBox}><CommonTextView style={styles.details}>Brand: {product.brand}</CommonTextView></View>
-        <View style={styles.detailBox}><CommonTextView style={styles.details}>Alcohol Content: {product.alcoholByVolume}%</CommonTextView></View>
-        <View style={styles.detailBox}><CommonTextView style={styles.details}>Category: {product.categoryName}</CommonTextView></View>
-      </View>
-    </ScrollView>
+          )}
+
+          <CommonTextView style={styles.sectionTitle}>Select Store</CommonTextView>
+          {stores.map((store, idx) => {
+            const isClosed = isStoreClosedToday(store);
+            return (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => !isClosed && setSelectedStore(store.storeName)}
+                style={[
+                  styles.storeCard,
+                  selectedStore === store.storeName && styles.selectedStore,
+                  isClosed && styles.closedStore,
+                ]}
+                disabled={isClosed}
+              >
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <CommonTextView style={styles.storeName}>{store.storeName}</CommonTextView>
+                  <CommonTextView>Rating: {store.rating}</CommonTextView>
+                </View>
+                <CommonTextView style={styles.storeMeta}>Delivery Radius: {store.deliveryRadiusKm} km</CommonTextView>
+                <CommonTextView style={styles.storeMeta}>Min Order: ${store.minimumOrderAmount.toFixed(2)}</CommonTextView>
+                <CommonTextView style={styles.storeMeta}>Accepting Orders: {store.isCurrentlyAcceptingOrders ? 'Yes' : 'No'}</CommonTextView>
+              </TouchableOpacity>
+            );
+          })}
+          <CommonTextView style={styles.storeMeta}>{product.description}</CommonTextView>
+          <CommonTextView style={{ "fontWeight": 600, fontSize: 16, marginVertical: 16 }}>Product details:</CommonTextView>
+          <View style={styles.detailsGrid}>
+            <View style={styles.detailBox}><CommonTextView style={styles.details}>Volume</CommonTextView> <CommonTextView>{selectedVariant.volume}</CommonTextView></View>
+            <View style={styles.detailBox}><CommonTextView style={styles.details}>Brand </CommonTextView> <CommonTextView>{product.brand}</CommonTextView></View>
+            <View style={styles.detailBox}><CommonTextView style={styles.details}>Alcohol Content </CommonTextView> <CommonTextView>{product.alcoholByVolume}%</CommonTextView></View>
+            <View style={styles.detailBox}><CommonTextView style={styles.details}>Category</CommonTextView> <CommonTextView>{product.categoryName}</CommonTextView></View>
+          </View>
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16, backgroundColor: '#fff' },
+  container: { backgroundColor: '#fff', padding: 16 },
   imageContainer: {
     position: 'relative',
     borderWidth: 1,
     borderColor: '#000',
-    padding: 16,
     alignItems: 'center',
     borderRadius: 10,
+    marginBottom: 16
   },
 
   image: {
-    width: 150,
-    height: 200,
+    width: '90%',
+    height: 300,
   },
 
   favoriteIcon: {
@@ -217,24 +227,24 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 6,
   },
-  name: { fontSize: 20, fontWeight: 'bold', marginTop: 16 },
-  price: { fontSize: 18, marginBottom: 10 },
-  sectionTitle: { fontWeight: 'bold', marginVertical: 10 },
-  sizeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  sizeButton: { padding: 8, borderWidth: 1, borderRadius: 8, marginRight: 8 },
-  selectedSize: { backgroundColor: '#ffe0cc', borderColor: '#FF6600' },
-  quantityRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 8 },
+  name: { fontSize: 32, fontWeight: '700', marginBottom: 16 },
+  price: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
+  sectionTitle: { fontWeight: 'bold', marginBottom: 16, fontSize: 12, fontWeight: '600', },
+  sizeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16, },
+  sizeButton: { padding: 8, borderWidth: 1, fontSize: 12, fontWeight: '600', borderRadius: 8, marginRight: 8 },
+  selectedSize: { backgroundColor: '#FFD8C8' },
+  quantityRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 },
   qtyBtn: { borderWidth: 1, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6 },
-  addToCartBtn: { backgroundColor: '#FF6600', padding: 14, borderRadius: 30, marginVertical: 16, alignItems: 'center' },
+  addToCartBtn: { backgroundColor: '#FF6600', padding: 14, borderRadius: 30, marginBottom: 16, alignItems: 'center', fontSize: 20 },
   addToCartText: { color: '#fff', fontWeight: 'bold' },
-  storeCard: { borderWidth: 1, borderRadius: 8, padding: 10, marginBottom: 8, borderColor: '#ccc' },
-  selectedStore: { backgroundColor: '#ffe0cc', borderColor: '#FF6600' },
+  storeCard: { borderWidth: 1, borderRadius: 5, padding: 10, marginBottom: 8, borderColor: '#99A0AC' },
+  selectedStore: { backgroundColor: '#FFD8C8', borderColor: '#FF6600' },
   closedStore: { backgroundColor: '#f0f0f0', borderColor: '#aaa', opacity: 0.5 },
-  storeName: { fontWeight: 'bold' },
-  storeMeta: { color: '#444', fontSize: 12 },
-  detailsGrid: { marginTop: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  detailBox: { width: '48%', padding: 10, backgroundColor: '#f5f5f5', borderRadius: 8, marginBottom: 10 },
-  details: { fontSize: 14, textAlign: 'center' },
+  storeName: { fontSize: 16, fontWeight: '600' },
+  storeMeta: { color: '#5B5B5B', fontSize: 14, fontWeight: '400' },
+  detailsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  detailBox: { width: '48%', paddingHorizontal: 16, marginBottom: 16, borderRadius: 8},
+  details: { fontSize: 14, fontWeight: '400', color: '#99A0AC' },
 });
 
 export default ProductDetailScreen;
