@@ -53,7 +53,6 @@ import { CouponProvider } from "../Providers/CouponProvider"; // adjust path as 
 
 import BottomTabs from "../components/BottomTabs";
 import TopBar from "../components/CommonTopBar";
-import Header from "../components/HeaderBar";
 
 const Stack = createNativeStackNavigator();
 
