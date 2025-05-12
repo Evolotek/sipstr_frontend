@@ -25,23 +25,21 @@ const ProductCard = ({ item, isFavorite, variant, onFavoriteToggle, onPress, add
 
       <View style={styles.details}>
         <CommonTextView style={styles.name}>
-          {item.productName} - {variant.packageName}
+          {item.productName}
+        </CommonTextView>
+        <CommonTextView style={styles.subtitle}>
+          {variant.packageName || 'Brand Name'}
         </CommonTextView>
         <CommonTextView style={styles.price}>
           From {variant.unitPrice.toFixed(2)}
         </CommonTextView>
-
       </View>
-      {addToCart && <TouchableOpacity
-        style={styles.addIcon}
-        onPress={() => addToCart()}
-      >
-        <Ionicons
-          name="add-outline"
-          size={24}
-          color={colors.white}
-        />
-      </TouchableOpacity>}
+
+      {addToCart && (
+        <TouchableOpacity style={styles.addIcon} onPress={() => addToCart()}>
+          <Ionicons name="add-outline" size={24} color={colors.white} />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 };
@@ -66,6 +64,14 @@ const styles = StyleSheet.create({
     height: 270,
     borderRadius: 6,
   },
+  favoriteIcon: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderRadius: 16,
+    padding: 4,
+  },
   addIcon: {
     position: 'absolute',
     bottom: 8,
@@ -73,21 +79,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#EA580C',
     padding: 4,
     elevation: 2,
+    borderRadius: 16,
   },
   details: {
     marginTop: 10,
   },
   name: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '400',
   },
-  brand: {
+  subtitle: {
     fontSize: 14,
     color: 'gray',
+    marginTop: 2,
   },
   price: {
     fontSize: 12,
     fontWeight: '700',
+    marginTop: 4,
   },
 });
 
