@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 12,
-    marginBottom: 10,
+    marginBottom: 16,
+    paddingHorizontal: 16,
     fontFamily: 'Poppins',
   },
 });
