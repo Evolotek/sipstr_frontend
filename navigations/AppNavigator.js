@@ -22,6 +22,7 @@ import HomeScreen from "../screens/Home/HomeScreen";
 import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
 import CartScreen from '../screens/Cart/CartScreen';
+import CouponScreen from '../screens/Cart/CouponScreen';
 
 //Profile
 import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
@@ -32,6 +33,7 @@ const ProfileScreen = () => <Text style={styles.pageContent}>Profile</Text>;
 // Contexts
 import { CartProvider } from '../Providers/CartProvider';
 import { FavoriteProvider } from '../Providers/FavoriteProvider';
+import { CouponProvider } from '../Providers/CouponProvider'; // adjust path as needed
 
 import BottomTabs from '../components/BottomTabs';
 import Header from '../components/HeaderBar';
@@ -42,7 +44,7 @@ const ScreenWithLayout = ({ children, navigation }) => (
     <View style={{ flex: 1 }}>
         <Header navigation={navigation} />
         <View style={{ flex: 1 }}>{children}</View>
-        <BottomTabs navigation={navigation}/>
+        <BottomTabs navigation={navigation} />
         <style />
     </View>
 );
@@ -50,74 +52,84 @@ const ScreenWithLayout = ({ children, navigation }) => (
 export default function App() {
     return (
         <CartProvider>
-            <FavoriteProvider>
-                <NavigationContainer>
-                    <Stack.Navigator screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                        <Stack.Screen name="Login">
-                            {({ navigation }) => (<LoginScreen navigation={navigation} />)}
-                        </Stack.Screen>
-                        <Stack.Screen name="SignUp">
-                            {({ navigation }) => (
-                                < SignUpScreen navigation={navigation} />
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="Home">
-                            {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <HomeScreen />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="Search">
-                            {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <SearchScreen />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="Categories">
-                            {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <CategoriesScreen />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="Profile">
-                            {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <ProfileScreen />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
+            <CouponProvider>
+                <FavoriteProvider>
+                    <NavigationContainer>
+                        <Stack.Navigator screenOptions={{ headerShown: false }}>
+                            <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                            <Stack.Screen name="Login">
+                                {({ navigation }) => (<LoginScreen navigation={navigation} />)}
+                            </Stack.Screen>
+                            <Stack.Screen name="SignUp">
+                                {({ navigation }) => (
+                                    < SignUpScreen navigation={navigation} />
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="Home">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <HomeScreen />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="Search">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <SearchScreen />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="Categories">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <CategoriesScreen />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="Profile">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <ProfileScreen />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
 
-                        <Stack.Screen name="CartScreen">
-                            {({ navigation }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <CartScreen navigation={navigation} />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="SorryScreen" component={SorryScreen} />
-                        <Stack.Screen name="AccountSettings" component={AccountSettings} />
-                        <Stack.Screen name="Addresses" component={AddressesScreen} />
-                        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-                        <Stack.Screen name="VerifyOTP">
-                            {({ navigation, route }) => (
-                                <VerifyOTPScreen navigation={navigation} route={route} />
-                            )}
-                        </Stack.Screen>
-                        <Stack.Screen name="ProductDetailScreen">
-                            {({ navigation, route }) => (
-                                <ScreenWithLayout navigation={navigation}>
-                                    <ProductDetailScreen navigation={navigation} route={route} />
-                                </ScreenWithLayout>
-                            )}
-                        </Stack.Screen>
+                            <Stack.Screen name="CartScreen">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <CartScreen navigation={navigation} />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="CouponScreen">
+                                {({ navigation }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <CouponScreen navigation={navigation} />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="SorryScreen" component={SorryScreen} />
+                            <Stack.Screen name="AccountSettings" component={AccountSettings} />
+                            <Stack.Screen name="Addresses" component={AddressesScreen} />
+                            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
 
-                    </Stack.Navigator>
-                </NavigationContainer>
-            </FavoriteProvider>
+                            <Stack.Screen name="VerifyOTP">
+                                {({ navigation, route }) => (
+                                    <VerifyOTPScreen navigation={navigation} route={route} />
+                                )}
+                            </Stack.Screen>
+                            <Stack.Screen name="ProductDetailScreen">
+                                {({ navigation, route }) => (
+                                    <ScreenWithLayout navigation={navigation}>
+                                        <ProductDetailScreen navigation={navigation} route={route} />
+                                    </ScreenWithLayout>
+                                )}
+                            </Stack.Screen>
+
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </FavoriteProvider>
+            </CouponProvider>
         </CartProvider>
     );
 }

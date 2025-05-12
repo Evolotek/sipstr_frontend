@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Ionicons import
-import CommonTextView from '../../components/CommonTextView';
+import CommonTextView from './CommonTextView';
 
 const DeliveryAddressBar = ({ onAddressChange }) => {
   const [address, setAddress] = useState('New York, NY');

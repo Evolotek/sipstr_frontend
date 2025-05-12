@@ -5,6 +5,8 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
+  const [cartVersion, setCartVersion] = useState(0); // New
+
 
   useEffect(() => {
     loadCart();
@@ -18,11 +20,12 @@ export const CartProvider = ({ children }) => {
 
   const updateCart = async (newCartItems) => {
     setCartCount(newCartItems.length);
+    setCartVersion((v) => v + 1); // Trigger re-renders
     await AsyncStorage.setItem('cart', JSON.stringify(newCartItems));
   };
 
   return (
-    <CartContext.Provider value={{ cartCount, updateCart }}>
+    <CartContext.Provider value={{ cartCount, updateCart, cartVersion }}>
       {children}
     </CartContext.Provider>
   );
