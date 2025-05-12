@@ -1,152 +1,137 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { useMutation } from "react-query";
 import { loginUser } from "../../../api/authService";
 import Logo from "../../../components/Logo";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CommonButton from "../../../components/CommonButton";
-import CommonError from "../../../components/CommonFieldError";
-import Toast from "react-native-toast-message";
-import CommonTextInput from "../../../components/CommonTextField";
+import CommonTextField from "../../../components/CommonTextField";
 import CommonTextView from "../../../components/CommonTextView";
 import { useLoader } from "../../../Utils/LoaderContext";
+import CommonUtils from "../../../Utils/CommonUtils";
+import { colors } from "../../../components/colors";
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formError, setFormError] = useState(""); // 👈 track form error
   const { setLoading } = useLoader();
-
-  // const mutation = useMutation(loginUser, {
-  //   onSuccess: async (data) => {
-  //     setLoading(false);
-  //     await AsyncStorage.setItem("authToken", data.token);
-  //     Toast.show({ type: "success", text1: "Login successful!" });
-  //     setTimeout(() => navigation.navigate("Home"), 1500);
-  //   },
-  //   onError: (error) => {
-  //     Toast.show({ type: "error", text1: error.message || "Login failed." });
-  //   },
-  // });
 
   const mutation = useMutation(loginUser, {
     onSuccess: async (data) => {
       setLoading(false);
-
-      Toast.show({ type: "success", text1: "Login successful!" });
-
-      // Delay navigation if you want to let Toast show
+      CommonUtils.showToast("Login successful!", "success");
       setTimeout(() => navigation.navigate("Home"), 1500);
     },
     onError: (error) => {
       setLoading(false);
-      Toast.show({ type: "error", text1: error.message || "Login failed." });
+      CommonUtils.showToast(error.message || "Login failed.", "error");
     },
   });
 
   const handleLogin = () => {
-    setFormError(""); // clear previous error
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!username || !password) {
+      CommonUtils.showToast("All fields are required.", "error");
+      return;
+    }
 
     if (
-      !username ||
-      (!emailRegex.test(username) && !phoneRegex.test(username))
+      !CommonUtils.isEmailValid(username) &&
+      !CommonUtils.isPhoneValid(username)
     ) {
-      setFormError("Please enter a valid email or mobile number.");
+      CommonUtils.showToast(
+        "Enter a valid email or 10-digit phone number.",
+        "error"
+      );
       return;
     }
 
-    if (!password || password.length < 6) {
-      setFormError("Password must be at least 6 characters long.");
+    if (!CommonUtils.isInternetConnected) {
+      CommonUtils.showToast("Please connect to Internet!", "error");
       return;
     }
+
     setLoading(true);
     mutation.mutate({ email: username, password });
   };
 
-  const handleSignUp = () => {
-    navigation.navigate("SignUp");
-  };
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <Logo />
-      <CommonTextView style={styles.welcome}>Welcome</CommonTextView>
-      <CommonTextInput
-        placeholder="Enter Mobile Number or Email"
+      <CommonTextView style={styles.welcomeText}>Welcome</CommonTextView>
+
+      <CommonTextField
+        placeholder="Enter Mobile Number/Email"
         value={username}
         onChangeText={setUsername}
-      />
-      <CommonTextInput
-        placeholder="Enter Password"
         style={styles.input}
+      />
+      <CommonTextField
+        placeholder="Enter Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        style={styles.input}
       />
-      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-        <CommonTextView style={styles.forgot}>Forgot Password</CommonTextView>
+
+      <TouchableOpacity
+        style={styles.forgotPasswordContainer}
+        onPress={() => navigation.navigate("ForgotPassword")}
+      >
+        <CommonTextView style={styles.forgotText}>
+          Forgot Password
+        </CommonTextView>
       </TouchableOpacity>
 
-      {formError ? <CommonError message={formError} /> : null}{" "}
-      {/* 👈 Show error here */}
       <CommonButton title="Login" onPress={handleLogin} style={styles.button} />
-      
-      <CommonTextView style={styles.signupText}>
-        Don’t have an account?{" "}
-        <CommonTextView onPress={handleSignUp} style={styles.signupLink}>
-          Signup
+
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+        <CommonTextView style={styles.signupText}>
+          Don’t have an account?{" "}
+          <CommonTextView style={styles.signupLink}>Signup</CommonTextView>
         </CommonTextView>
-      </CommonTextView>
-    </View>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
+    backgroundColor: colors.white,
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#ffffff",
+    alignItems: "center",
   },
-  welcome: {
-    fontFamily: "Poppins",
-    fontSize: 28,
+  welcomeText: {
+    fontSize: 26,
+    fontFamily: "Poppins-SemiBold",
+    marginVertical: 10,
     textAlign: "center",
-    marginVertical: 20,
-    fontWeight: 400,
   },
   input: {
-    height: 46,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 20,
-    fontFamily: "Poppins",
-    backgroundColor: "#fff",
+    width: "100%",
+    marginHorizontal: 20,
   },
-  forgot: {
-    fontFamily: "Poppins",
-    textAlign: "right",
-    color: "#EA580C",
-    marginBottom: 20,
+  forgotPasswordContainer: {
+    alignSelf: "flex-end",
+    marginRight: 8,
+    marginLeft: -10,
+  },
+  forgotText: {
+    color: colors.orange,
     fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "right",
   },
   signupText: {
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 20,
-    color: "#777",
+    fontSize: 14,
   },
   signupLink: {
-    color: "#EA580C",
-    fontWeight: "600",
+    color: colors.orange,
+    fontFamily: "Poppins-SemiBold",
   },
   button: {
     width: "100%",
+    marginHorizontal: 25,
+    marginVertical: 15,
+    alignSelf: "center",
   },
 });

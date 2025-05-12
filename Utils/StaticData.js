@@ -11,35 +11,40 @@ export const featuredData = [
     name: "Premium Wine",
     price: "$44.98",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Wine",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "2",
     name: "Champagne",
     price: "$79.99",
     volume: "1L",
-    image: "https://via.placeholder.com/70x130.png?text=Champagne",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "3",
     name: "Scotch Whiskey",
     price: "$20.99",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Scotch",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "4",
     name: "Tequila",
     price: "$45.99",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Tequila",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "5",
     name: "Rum",
     price: "$25.99",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Rum",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
 ];
 
@@ -49,28 +54,32 @@ export const topPicksData = [
     name: "Premium Wine",
     price: "$44.99",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Wine",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "7",
     name: "Beer",
     price: "$39.99",
     volume: "500ml",
-    image: "https://via.placeholder.com/70x130.png?text=Beer",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "8",
     name: "Scotch Whiskey",
     price: "$20.99",
     volume: "750ml",
-    image: "https://via.placeholder.com/70x130.png?text=Scotch",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
   {
     id: "9",
     name: "Kingfisher",
     price: "$12.99",
     volume: "500ml",
-    image: "https://via.placeholder.com/70x130.png?text=Kingfisher",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
   },
 ];
 
@@ -79,32 +88,38 @@ export const savedAddresses = [
     id: "1",
     type: "home",
     label: "Home",
-    address: "123, Main Street, Apt 4B New York, NY 10001",
+    address: "123 Park Avenue, Apt 48, New York, NY 10016, United States",
     isPrimary: true,
   },
   {
     id: "2",
     type: "work",
     label: "Work",
-    address: "143 Starbridge Drive, Piscataway, NJ 08867, USA",
+    address: "143 Starbridge Drive, , Piscataway, NJ 08867, United States",
   },
   {
     id: "3",
     type: "other",
     label: "Glenview Drive",
-    address: "28 Glenview Drive, Edison, NJ 08854, USA",
+    address: "28 Glenview Drive, , Edison, NJ 08854, United States",
   },
   {
     id: "4",
     type: "other",
     label: "Nimmo Drive",
-    address: "208 Nimmo Drive, Oldbridge, NJ 08845, USA",
+    address: "208 Nimmo Drive, , Oldbridge, NJ 08845, United States",
   },
   {
     id: "5",
     type: "other",
     label: "Beaufin Court",
-    address: "118 Beaufin Ct, Westfield, NJ 08876, USA",
+    address: "118 Beaufin Ct, , Ottawa, ON 08876, Canada",
+  },
+  {
+    id: "6",
+    type: "other",
+    label: "India - Home",
+    address: "B101 Parshwa Tower Wing C, , Ahmedabad, GJ 380015, India",
   },
 ];
 
@@ -115,89 +130,99 @@ export const countries = [
 ];
 
 export const states = [
-  { label: "New Jersey", value: "US" },
-  { label: "Ontario", value: "CA" },
-  { label: "Ahmedabad", value: "IN" },
+  { label: "New Jersey", value: "NJ" },
+  { label: "New York", value: "NY" },
+  { label: "Ontario", value: "ON" },
+  { label: "Gujarat", value: "GJ" },
 ];
 
-export const favouriteProducts = [
+export const favouriteProductsList = [
   {
     id: "1",
-    name: "Dead Man Beer",
+    productName: "Dead Man Beer",
     price: "39.98",
-    imageUrl: "https://i.imgur.com/1N6J9hR.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
-    isAddToCart: true,
+    isAddToCart: false,
   },
   {
     id: "2",
-    name: "Vintage Whiskey",
+    productName: "Vintage Whiskey",
     price: "45.00",
-    imageUrl: "https://i.imgur.com/5fVQ1ov.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "3",
-    name: "Gin Fizz",
+    productName: "Gin Fizz",
     price: "33.50",
-    imageUrl: "https://i.imgur.com/VdK3tMk.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "4",
-    name: "Classic Rum",
+    productName: "Classic Rum",
     price: "29.90",
-    imageUrl: "https://i.imgur.com/yhCNQxt.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "5",
-    name: "Smooth Tequila",
+    productName: "Smooth Tequila",
     price: "51.25",
-    imageUrl: "https://i.imgur.com/8lEddqM.png",
-    isFav: true,
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isAddToCart: false,
   },
   {
     id: "6",
-    name: "Premium Vodka",
+    productName: "Premium Vodka",
     price: "49.00",
-    imageUrl: "https://i.imgur.com/V3ylZzG.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "7",
-    name: "Red Wine",
+    productName: "Red Wine",
     price: "27.30",
-    imageUrl: "https://i.imgur.com/X9MRoMs.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "8",
-    name: "Sparkling Champagne",
+    productName: "Sparkling Champagne",
     price: "63.00",
-    imageUrl: "https://i.imgur.com/wgdQEPW.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "9",
-    name: "Mojito Mix",
+    productName: "Mojito Mix",
     price: "19.75",
-    imageUrl: "https://i.imgur.com/3X9z9xH.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },
   {
     id: "10",
-    name: "Craft Beer Pack",
+    productName: "Craft Beer Pack",
     price: "58.40",
-    imageUrl: "https://i.imgur.com/FfsqHd9.png",
+    image:
+      "https://img.freepik.com/free-photo/whiskey-splash_23-2151936798.jpg",
     isFav: true,
     isAddToCart: false,
   },

@@ -1,25 +1,24 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Image, Text } from "react-native";
 import CommonTextView from "../../components/CommonTextView";
 import CommonButton from "../../components/CommonButton";
 import { globalStyles } from "../../components/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CommonAppNameLabel from "../../components/CommonAppNameLabel";
 import { colors } from "../../components/colors";
-import { getUserData } from "../../Utils/StorageHelper";
+import { getUserData, getToken } from "../../Utils/StorageHelper";
 import Logo from "../../components/Logo";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = ({ navigation }) => {
   const navigateToHome = async () => {
-    var authToken = await AsyncStorage.getItem('authToken');
-    var screenName = authToken ? "Home" : "Login";
+    var user = await getToken();
+    var screenName = user ? "Home" : "Login";
+    console.log(screenName);
     navigation.reset({
       index: 0,
       routes: [{ name: screenName }],
     });
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
@@ -27,8 +26,10 @@ const WelcomeScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.bottomSection}>
-        <CommonTextView style={styles.title}>Are you over 21?</CommonTextView>
-        <CommonTextView style={styles.subtitle}>
+        <CommonTextView style={{ fontSize: 27, margin: 20 }}>
+          Are you over 21?
+        </CommonTextView>
+        <CommonTextView style={{ fontSize: 18 }}>
           You must confirm that you are of legal drinking age to enter
         </CommonTextView>
 
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 50,
+    paddingBottom: 30,
   },
   logoContainer: {
     flex: 1,
@@ -65,30 +66,15 @@ const styles = StyleSheet.create({
   bottomSection: {
     alignItems: "center",
   },
-  title: {
-    fontSize: 27,
-    fontWeight: "400",
-    marginBottom: 10,
-    textAlign: "center",
-    fontFamily: "Poppins",
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "400",
-    color: "#000000",
-    textAlign: "center",
-    marginHorizontal: 20,
-    marginBottom: 20,
-    fontFamily: "Poppins"
-  },
+
   buttonRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    justifyContent: "center",
+    margin: 20,
   },
   button: {
-    width: 100,
-    backgroundColor: colors.orange,
+    width: "150",
+    marginRight: 20,
     alignItems: "center",
   },
 });

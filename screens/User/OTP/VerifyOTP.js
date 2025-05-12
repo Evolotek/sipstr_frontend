@@ -1,34 +1,38 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, use } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation } from 'react-query';
+import { useMutation } from "react-query";
 import CommonTextView from "../../../components/CommonTextView";
 import CommonButton from "../../../components/CommonButton";
-import CommonAppNameLabel from "../../../components/CommonAppNameLabel";
 import CommonTextField from "../../../components/CommonTextField";
 import { colors } from "../../../components/colors";
 import { sendOTP, verifyOTP } from "../../../api/authService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
+import { getUserData } from "../../../Utils/StorageHelper";
+import CommonUtils from "../../../Utils/CommonUtils";
 import Logo from "../../../components/Logo";
+import { useLoader } from "../../../Utils/LoaderContext";
 
 const VerifyOTPScreen = ({ navigation, route }) => {
-  const [otp, setOtp] = useState(route?.params.split(''));
+  const { setLoading } = useLoader();
+
+  const [otp, setOtp] = useState(route?.params.split(""));
   //const [otp, setOtp] = useState(["", "", "", ""]);
   const refs = [useRef(), useRef(), useRef(), useRef()];
   // Send OTP Mutation
   const sendOTPMutation = useMutation({
     mutationFn: sendOTP,
     onSuccess: (data) => {
+      setLoading(false);
       if (data.otp) {
-        Toast.show({ type: 'success', text1: "OTP sent successfully!" });
+        CommonUtils.showToast("OTP sent successfully!", "success");
       } else {
-        Toast.show({ type: 'error', text1: "Failed to send OTP" });
+        CommonUtils.showToast("Failed to send OTP", "error");
       }
     },
     onError: (error) => {
+      setLoading(false);
       console.log(error);
-      Toast.show({ type: 'error', text1: "Failed to send OTP" });
+      CommonUtils.showToast("Failed to send OTP", "error");
     },
   });
 
@@ -36,20 +40,22 @@ const VerifyOTPScreen = ({ navigation, route }) => {
   const verifyOTPMutation = useMutation({
     mutationFn: verifyOTP,
     onSuccess: (data) => {
+      setLoading(false);
       if (data.token) {
         navigation.navigate("Home");
       } else {
-        Toast.show({ type: 'error', text1: "Failed to verify OTP" });
+        CommonUtils.showToast("Failed to verify OTP", "error");
       }
     },
     onError: (error) => {
+      setLoading(false);
       console.log(error);
-      Toast.show({ type: 'error', text1: "Failed to verify OTP" });
+      CommonUtils.showToast("Failed to verify OTP", "error");
     },
   });
 
   useEffect(async () => {
-    const userData = await AsyncStorage.getItem('user_data');
+    const userData = await getUserData();
     sendOTPMutation.mutate({ email: JSON.parse(userData).email });
   }, []);
 
@@ -73,11 +79,15 @@ const VerifyOTPScreen = ({ navigation, route }) => {
   const validateAndSubmit = async () => {
     const joinedOTP = otp.join("");
     if (joinedOTP.length < 6) {
-      Toast.show({ type: 'error', text1: "Please enter the full 6-digit OTP" });
+      CommonUtils.showToast("Please enter the full 6-digit OTP", "error");
       return;
     }
-    const userData = await AsyncStorage.getItem('user_data');
-    verifyOTPMutation.mutate({ email: JSON.parse(userData).email, otp: joinedOTP });
+    setLoading(true);
+    const userData = await getUserData();
+    verifyOTPMutation.mutate({
+      email: userData.email,
+      otp: joinedOTP,
+    });
   };
 
   return (
@@ -106,19 +116,15 @@ const VerifyOTPScreen = ({ navigation, route }) => {
         ))}
       </View>
 
-      <CommonButton
-        title="Submit"
-        onPress={validateAndSubmit}
-        loading={verifyOTPMutation.isLoading}
-      />
-      <TouchableOpacity onPress={async () => {
-        const userData = await AsyncStorage.getItem('user_data');
-        sendOTPMutation.mutate({ email: JSON.parse(userData).email })
-      }
-      }>
-        <CommonTextView style={styles.resendLink}>
-          Resend OTP
-        </CommonTextView>
+      <CommonButton title="Submit" onPress={validateAndSubmit} />
+      <TouchableOpacity
+        onPress={async () => {
+          setLoading(true);
+          const userData = await getUserData(); //await AsyncStorage.getItem("user_data");
+          sendOTPMutation.mutate({ email: userData.email });
+        }}
+      >
+        <CommonTextView style={styles.resendLink}>Resend OTP</CommonTextView>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -127,45 +133,45 @@ const VerifyOTPScreen = ({ navigation, route }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.white,         // Background color
-    alignItems: "center",                  // Center horizontally
-    justifyContent: "center",              // Center vertically
-    padding: 24,                           // Padding around the edges
+    backgroundColor: colors.white, // Background color
+    alignItems: "center", // Center horizontally
+    justifyContent: "center", // Center vertically
+    padding: 24, // Padding around the edges
   },
   heading: {
-    fontFamily: 'Poppins_400Regular',
+    fontFamily: "Poppins-Regular",
     fontSize: 24,
-    textAlign: 'center',
-    marginVertical: 20
+    textAlign: "center",
+    marginVertical: 20,
   },
   instruction: {
-    textAlign: "center",                   // Centered text
-    marginVertical: 16,                    // Space above and below
-    color: colors.grayText,                // Subtext color
+    textAlign: "center", // Centered text
+    marginVertical: 16, // Space above and below
+    color: colors.grayText, // Subtext color
   },
   otpRow: {
-    flexDirection: "row",                  // Row layout
-    justifyContent: "space-between",       // Evenly space inputs
-    width: "80%",                          // 80% of screen width
-    marginBottom: 30,                      // Space below OTP fields
+    flexDirection: "row", // Row layout
+    justifyContent: "center", // Evenly space inputs
+    width: "80%", // 80% of screen width
+    marginBottom: 30, // Space below OTP fields
   },
   otpInput: {
-    width: 50,                             // Input box width
-    height: 55,                            // Input box height
-    borderRadius: 10,                      // Rounded corners
-    borderWidth: 1,                        // Border thickness
-    borderColor: colors.orange,           // Border color
-    fontSize: 24,                          // Digit font size
-    textAlign: "center",                   // Center digit inside box
-    fontFamily: "Poppins-SemiBold",       // Font style
+    width: 50, // Input box width
+    height: 55, // Input box height
+    borderRadius: 10, // Rounded corners
+    borderWidth: 1, // Border thickness
+    borderColor: colors.orange, // Border color
+    fontSize: 24, // Digit font size
+    textAlign: "center", // Center digit inside box
+    fontFamily: "Poppins-SemiBold", // Font style
+    marginHorizontal: 6,
   },
   resendLink: {
-    marginTop: 20,                         // Space above resend link
-    color: colors.orange,                 // Link color
-    fontFamily: "Poppins-SemiBold",       // Bold font
-    fontSize: 14,                          // Link font size
+    marginTop: 20, // Space above resend link
+    color: colors.orange, // Link color
+    fontFamily: "Poppins-SemiBold", // Bold font
+    fontSize: 14, // Link font size
   },
 };
-
 
 export default VerifyOTPScreen;

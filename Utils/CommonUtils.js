@@ -38,6 +38,7 @@ const CommonUtils = {
   isWeb: () => Platform.OS === "web",
 
   showToast: (msg, type = "info") => {
+    console.log("Toast Triggered: ", msg);
     Toast.show({
       type,
       text1: msg,

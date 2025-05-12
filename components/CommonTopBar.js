@@ -1,10 +1,11 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import CommonTextView from "./CommonTextView";
 import CommonAppNameLabel from "./CommonAppNameLabel";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { colors } from "./colors";
 import { globalStyles } from "./styles";
+import Logo from "./Logo";
 
 const TopBar = ({
   navigation,
@@ -20,10 +21,7 @@ const TopBar = ({
           onPress={() => navigation.navigation("Cart")}
           style={styles.cartIcon}
         >
-          <Image
-            source={require("../assets/images/cart.png")}
-            style={{ width: 20, height: 20 }}
-          />
+          <Ionicons name="cart-outline" size={24} color={colors.orange} />
         </TouchableOpacity>
       </View>
 

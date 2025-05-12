@@ -11,18 +11,24 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getUserData, clearStorage } from "../../../Utils/StorageHelper";
 import CommonTwoButtonAlertBox from "../../../components/CommonTwoButtonAlertBox";
-import CommonUtils from "../../../Utils/CommonUtils";
 import { colors } from "../../../components/colors";
 import CommonTextView from "../../../components/CommonTextView";
+import Utils from "../../../Utils/CommonUtils";
+import CustomAlertWithRating from "../../../components/CustomAlertWithRating";
 
 const AccountSettings = ({ navigation }) => {
   const [userData, setUserData] = useState({});
   const [showSignOutAlert, setShowSignOutAlert] = useState(false);
+  const [showRating, setShowRating] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await getUserData();
-      setUserData(user);
+      try {
+        const user = await getUserData();
+        setUserData(user);
+      } catch (err) {
+        console.error("Failed to load user:", err);
+      }
     };
     fetchUser();
   }, []);
@@ -39,10 +45,16 @@ const AccountSettings = ({ navigation }) => {
         navigation.navigate("OrderHistory");
         break;
       case "security":
+        navigation.navigate("ChangePassword");
+        break;
       case "referral":
+        Utils.showToast("referral");
+        break;
       case "faq":
+        Utils.showToast("faq");
+        break;
       case "rate":
-        CommonUtils.showToast(`${option} clicked`);
+        setShowRating(true);
         break;
       case "signout":
         setShowSignOutAlert(true);
@@ -162,6 +174,16 @@ const AccountSettings = ({ navigation }) => {
         onConfirm={handleSignOut}
         onCancel={() => setShowSignOutAlert(false)}
       />
+
+      {showRating && (
+        <CustomAlertWithRating
+          visible={showRating}
+          onClose={() => setShowRating(false)}
+          onSubmit={(rating) => {
+            Utils.showToast("User rating: " + rating);
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };

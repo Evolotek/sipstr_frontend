@@ -15,9 +15,12 @@ import HeaderBar from "../../components/HeaderBar";
 import CommonButton from "../../components/CommonButton";
 import CommonTextView from "../../components/CommonTextView";
 import { activeOrders, pastOrderData } from "../../Utils/StaticData";
+import CommonSearchInput from "../../components/CustomSearchInput";
+import CommonUtils from "../../Utils/CommonUtils";
 
 const OrderHistoryScreen = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState("active");
+  const [searchText, setSearchText] = useState("");
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
@@ -85,18 +88,25 @@ const OrderHistoryScreen = ({ navigation }) => {
   const getCurrentData = () => {
     return selectedTab === "active" ? activeOrders : pastOrderData;
   };
+  const handleSearchTextChange = (text) => {
+    setSearchText(text); // Update the search text state
+    CommonUtils.showToast(text);
+  };
+
+  const handleCancelBtn = () => {};
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerWrapper}>
         <HeaderBar title="Your Orders" navigation={navigation} />
       </View>
-
-      <View style={styles.searchBar}>
-        <Ionicons name="search" size={18} color="#99A0AC" />
-        <TextInput
-          placeholder="Search your orders"
-          style={styles.searchPlaceholder}
+      <View>
+        <CommonSearchInput
+          isRightIconNeedShow={true}
+          placeholderText="Search your orders"
+          onSearchTextChange={handleSearchTextChange}
+          rightIconName="close-circle-outline"
+          onRightIconPress={handleCancelBtn}
         />
       </View>
 
@@ -141,24 +151,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 10,
   },
-  searchBar: {
-    flexDirection: "row",
-    backgroundColor: "#F5F5F5",
-    padding: 12,
-    borderRadius: 14,
-    alignItems: "center",
-    margin: 15,
-  },
-  searchPlaceholder: {
-    marginLeft: 10,
-    color: "#99A0AC",
-    fontFamily: "Poppins-Regular",
-    fontSize: 15,
-  },
+
   tabRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 15,
+    marginVertical: 15,
   },
   activeTab: {
     borderBottomWidth: 2,

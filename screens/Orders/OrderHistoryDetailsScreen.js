@@ -44,11 +44,15 @@ const OrderHistoryDetailsScreen = ({ route, navigation }) => {
           </CommonTextView>
         </View>
 
+        <View style={styles.divider} />
+
         {/* Items */}
         <View style={styles.itemWrapper}>
           {order.items.map((item, index) => (
             <View style={styles.itemRow} key={index}>
-              <CommonTextView style={styles.itemQty}>x1</CommonTextView>
+              <CommonTextView style={styles.itemQty}>
+                x {item.itemQty}
+              </CommonTextView>
               <CommonTextView style={styles.itemName}>
                 {item.name}
               </CommonTextView>
@@ -127,7 +131,7 @@ const OrderHistoryDetailsScreen = ({ route, navigation }) => {
             {order.address}
           </CommonTextView>
         </View>
-
+        <View style={styles.divider} />
         {/* Call Button */}
         <CommonTextView style={styles.callText} onPress={handleCall}>
           Call {order.store} ({order.phone})
@@ -143,10 +147,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   contentContainer: {
-    padding: 16,
+    //padding: 16,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 5,
+    paddingLeft: 15,
   },
   storeRow: {
     flexDirection: "row",
@@ -165,6 +170,8 @@ const styles = StyleSheet.create({
   },
   itemWrapper: {
     marginTop: 10,
+
+    paddingHorizontal: 15,
   },
   itemRow: {
     flexDirection: "row",
@@ -189,15 +196,18 @@ const styles = StyleSheet.create({
   },
   breakdown: {
     marginTop: 20,
+    paddingLeft: 15,
   },
   breakRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 2,
+    paddingRight: 10,
   },
   value: {
     fontSize: 13,
     fontFamily: "Poppins-Medium",
+    paddingRight: 10,
   },
   totalLabel: {
     fontFamily: "Poppins-SemiBold",
@@ -210,15 +220,17 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#eee",
-    marginVertical: 20,
+    //marginVertical: 20,
   },
   sectionTitle: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 16,
-    marginBottom: 12,
+    marginVertical: 12,
+    paddingLeft: 15,
   },
   infoRow: {
     marginBottom: 16,
+    paddingLeft: 15,
   },
   infoLabel: {
     color: "#99A0AC",

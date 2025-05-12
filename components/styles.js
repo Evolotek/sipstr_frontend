@@ -19,7 +19,7 @@ export const globalStyles = StyleSheet.create({
     }),
   },
   buttonText: {
-    fontFamily: "Poppins",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: colors.white,
     textAlign: "center",
@@ -44,7 +44,7 @@ export const globalStyles = StyleSheet.create({
     }),
   },
   textView: {
-    fontFamily: "Poppins",
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: colors.black,
     ...(Platform.OS === "web" && {

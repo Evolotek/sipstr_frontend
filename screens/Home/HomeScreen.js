@@ -1,21 +1,20 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import CommonTextView from '../../components/CommonTextView';
+import React from "react";
+import { StyleSheet, View, SafeAreaView } from "react-native";
+import CommonTextView from "../../components/CommonTextView";
+import { colors } from "../../components/colors";
 
 export default function Home() {
   return (
-    <View style={styles.container}>
-     <CommonTextView>Home</CommonTextView>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <CommonTextView>Home</CommonTextView>
+      
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
+    backgroundColor: colors.white,
   },
 });

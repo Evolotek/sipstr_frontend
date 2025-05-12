@@ -8,7 +8,7 @@ import Utils from "../../../Utils/CommonUtils";
 import HeaderBar from "../../../components/HeaderBar";
 import { useLoader } from "../../../Utils/LoaderContext";
 import { getUserData, saveUserData } from "../../../Utils/StorageHelper";
-import { getMyProfile } from "../../../viewmodels/userViewModel";
+import Logo from "../../../components/Logo";
 
 const EditProfile = ({ navigation }) => {
   const [nameInput, setNameInput] = useState("");
@@ -93,6 +93,7 @@ const EditProfile = ({ navigation }) => {
         title="Edit Profile"
         style={styles.headerStyle}
       />
+      <Logo />
       <View style={styles.formContainer}>
         <CommonTextField
           placeholder="Enter Name"

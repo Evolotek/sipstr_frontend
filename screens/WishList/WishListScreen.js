@@ -1,42 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { colors } from "../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderBar from "../../components/HeaderBar";
-import { favouriteProducts as staticData } from "../../Utils/StaticData";
-import CommonProductCard from "../../components/CommonProductCard";
+import { favouriteProductsList } from "../../Utils/StaticData";
+import ProductCard from "../../components/ProductCard";
+import Utils from "../../Utils/CommonUtils";
 
 const WishListScreen = ({ navigation }) => {
-  const [favouriteProducts, setFavouriteProducts] = useState(staticData);
+  const [favouriteProductsState, setFavouriteProductsState] = useState([]);
+
+  useEffect(() => {
+    setFavouriteProductsState(favouriteProductsList);
+  }, []);
   const toggleFavorite = (id) => {
-    const updated = favouriteProducts.map((item) =>
+    console.log("toggleFavorite called");
+    const updated = favouriteProductsState.map((item) =>
       item.id === id ? { ...item, isFav: !item.isFav } : item
     );
-    setFavouriteProducts(updated);
+    setFavouriteProductsState(updated); // Update state with new favorite status
   };
+
+  const handleAddToCart = (productId) => {
+    Utils.showToast("Added product to cart with ID:" + productId);
+  };
+  const renderItem = ({ item }) => (
+    <ProductCard
+      item={item}
+      isFavorite={item.isFav}
+      variant={{
+        productName: item.name,
+        packageName: "Default",
+        unitPrice: parseFloat(item.price),
+      }}
+      onFavoriteToggle={toggleFavorite}
+      onPress={() => console.log("Product pressed", item.id)}
+      addToCart={() => handleAddToCart(item.id)}
+    />
+  );
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.wrapper}>
         <HeaderBar title="Wishlist" navigation={navigation} />
         <FlatList
-          data={favouriteProducts}
+          data={favouriteProductsState}
           keyExtractor={(item) => item.id}
           numColumns={2}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.flatListContent}
           ListFooterComponent={<View style={{ height: 80 }} />}
-          renderItem={({ item }) => (
-            <CommonProductCard
-              name={item.name}
-              price={item.price}
-              imageUrl={item.imageUrl}
-              isFav={item.isFav}
-              showFavIcon={true}
-              showAddButton={true}
-              onPressFav={() => toggleFavorite(item.id)}
-            />
-          )}
+          renderItem={renderItem}
         />
       </View>
     </SafeAreaView>

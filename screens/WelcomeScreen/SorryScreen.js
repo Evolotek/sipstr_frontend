@@ -1,30 +1,17 @@
 import React from "react";
-import {
-  View,
-  Platform,
-  BackHandler,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import { View, Platform, BackHandler, Alert, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CommonAppNameLabel from "../../components/CommonAppNameLabel";
 import CommonTextView from "../../components/CommonTextView";
 import { colors } from "../../components/colors";
 import Logo from "../../components/Logo";
+import CommonButton from "../../components/CommonButton";
+import HeaderBar from "../../components/HeaderBar";
 
-const SorryScreen = () => {
-  const handleExit = () => {
-    if (Platform.OS === "android") {
-      BackHandler.exitApp();
-    } else if (Platform.OS === "ios") {
-      Alert.alert("Access Denied", "You must be 21 or older to access this app.");
-    } else {
-      Alert.alert("Access Denied", "You must be 21 or older to access this site.");
-    }
-  };
-
+const SorryScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
+      <HeaderBar title="" navigation={navigation} />
       <Logo />
 
       <View style={styles.messageContainer}>
@@ -40,7 +27,7 @@ const SorryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.white,
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingBottom: 50,
@@ -56,18 +43,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "600",
     marginBottom: 10,
-    color: "#000",
+    color: colors.black,
     textAlign: "center",
-    fontFamily: "Poppins"
+    fontFamily: "Poppins-SemiBold",
   },
   message: {
     fontSize: 18,
-    color: "#000",
+    color: colors.black,
     textAlign: "center",
     marginHorizontal: 20,
-    fontFamily: "Poppins"
+    marginTop: 10,
+  },
+  btnStyle: {
+    margin: 15,
   },
 });
 
