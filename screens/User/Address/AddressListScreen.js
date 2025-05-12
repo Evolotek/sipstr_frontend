@@ -158,18 +158,18 @@ const AddressListScreen = ({ navigation, route }) => {
               if (homeAddress) handleEditAddress(homeAddress.id);
             }}
           >
-            <Ionicons name="home" size={20} color="#000" />
-            <View>
+            <View style={{ marginRight: 8 }}>
+              <Ionicons name="home" size={20} color="#000" />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
               <CommonTextView style={styles.labelText}>Home</CommonTextView>
-              {homeAddress?.address && (
-                <CommonTextView
-                  style={styles.subAddressText}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {homeAddress.address}
-                </CommonTextView>
-              )}
+              <CommonTextView
+                style={styles.subAddressText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {homeAddress.address}
+              </CommonTextView>
             </View>
           </TouchableOpacity>
 
@@ -181,8 +181,10 @@ const AddressListScreen = ({ navigation, route }) => {
               if (workAddress) handleEditAddress(workAddress.id);
             }}
           >
-            <Ionicons name="business" size={20} color="#000" />
-            <View>
+            <View style={{ marginRight: 8 }}>
+              <Ionicons name="home" size={20} color="#000" />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
               <CommonTextView style={styles.labelText}>Work</CommonTextView>
               {addressList.find((a) => a.type === "work")?.address && (
                 <CommonTextView
@@ -274,7 +276,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "#888",
     marginTop: 2,
-    maxWidth: 110,
+    flex: 1,
+    minWidth: 0,
   },
   labelRow: {
     flexDirection: "row",
@@ -284,6 +287,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   labelButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#F5F5F5",
@@ -375,16 +379,18 @@ const styles = StyleSheet.create({
   },
   addressDetails: {
     flex: 1,
+    minWidth: 0, // ✅ allow shrinking
+  },
+  addressText: {
+    fontSize: 12,
+    color: "#666",
+    flex: 1, // ✅ allow Text to shrink inside flex row
   },
   addressLabel: {
     fontSize: 15,
     fontFamily: "Poppins-SemiBold",
     color: "#000",
     marginBottom: 2,
-  },
-  addressText: {
-    fontSize: 12,
-    color: "#666",
   },
 });
 
