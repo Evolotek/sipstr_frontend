@@ -13,7 +13,8 @@ export const loginUser = async ({ email, password }) => {
     //apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     //after getting token get user's data and save it to local storage
-    await getMyProfile();
+    const profileData = await getMyProfile();
+    await saveUserData(profileData);
 
     return { token };
   } catch (error) {
@@ -63,9 +64,6 @@ export const getMyProfile = async () => {
   try {
     const profileResponse = await apiClient.get("users/me");
     console.log("Profile response:", profileResponse.data);
-
-    await saveUserData(profileResponse.data);
-
     return profileResponse.data;
   } catch (error) {
     console.error("Error fetching user profile:", error);

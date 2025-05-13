@@ -9,49 +9,51 @@ import HeaderBar from "../../../components/HeaderBar";
 import { useLoader } from "../../../Utils/LoaderContext";
 import { getUserData, saveUserData } from "../../../Utils/StorageHelper";
 import Logo from "../../../components/Logo";
+import { getMyProfile } from "../../../api/authService";
+import { useQuery } from "react-query";
 
 const EditProfile = ({ navigation }) => {
   const [nameInput, setNameInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [PhoneInput, setPhoneInput] = useState("");
   const { setLoading } = useLoader();
-
   const [userData, setUserData] = useState(null);
+  const [initialUserData, setInitialUserData] = useState(null);
 
   useEffect(() => {
     const loadUser = async () => {
       setLoading(true);
       const localUser = await getUserData();
-
       if (localUser) {
-        console.log("Local :  " + localUser.fullName);
-        setNameInput(localUser.fullName);
-        setEmailInput(localUser?.email);
-        setPhoneInput(localUser?.mobileNumber);
+        setInitialUserData(localUser);
         setUserData(localUser);
-      } else {
-        console.log("Local user not found");
+        setNameInput(localUser.fullName);
+        setEmailInput(localUser.email);
+        setPhoneInput(localUser.mobileNumber);
       }
-
-      try {
-        const result = await getMyProfile();
-        if (result.success && result.data) {
-          console.log(result.data);
-          setUserData(result.data);
-          setNameInput(result.data.fullName);
-          setEmailInput(result.data?.email);
-          setPhoneInput(result.data.mobileNumber);
-          await saveUserData(result.data);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
     };
-
     loadUser();
   }, []);
+
+  useQuery("myProfile", getMyProfile, {
+    enabled: !!initialUserData,
+    initialData: initialUserData,
+    staleTime: 0, // always fetch fresh
+    onSuccess: async (data) => {
+      setUserData(data);
+      setNameInput(data.fullName);
+      setEmailInput(data.email);
+      setPhoneInput(data.mobileNumber);
+      await saveUserData(data); // Save updated profile only once, here
+    },
+    onError: (error) => {
+      CommonUtils.showToast(
+        error.message || "Failed to fetch profile",
+        "error"
+      );
+    },
+  });
 
   const validateAndSubmit = () => {
     const name = nameInput.trim();
@@ -74,16 +76,6 @@ const EditProfile = ({ navigation }) => {
     }
 
     //handleProfileUpdate();
-  };
-
-  const handleProfileUpdate = async (payload) => {
-    try {
-      setLoading(true);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

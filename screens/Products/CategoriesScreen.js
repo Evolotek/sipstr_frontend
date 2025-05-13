@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useQuery, useInfiniteQuery } from 'react-query';
-import { fetchCategories, fetchProductsByCategory } from '../../api/categoryService';
-import CategoryList from './CategoryList';
-import ProductCard from '../../components/ProductCard';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useFavorites } from '../../Providers/FavoriteProvider';
-import DeliveryAddressBar from '../../components/DeliveryAddressBar';
-import CommonTextView from '../../components/CommonTextView';
+import { useEffect, useState } from "react";
+import { FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { useQuery, useInfiniteQuery } from "react-query";
+import {
+  fetchCategories,
+  fetchProductsByCategory,
+} from "../../api/categoryService";
+import CategoryList from "./CategoryList";
+import ProductCard from "../../components/ProductCard";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { useFavorites } from "../../Providers/FavoriteProvider";
+import DeliveryAddressBar from "../../components/DeliveryAddressBar";
+import CommonTextView from "../../components/CommonTextView";
 
 const CategoryScreen = () => {
   const navigation = useNavigation();

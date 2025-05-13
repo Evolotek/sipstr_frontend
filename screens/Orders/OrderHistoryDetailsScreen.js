@@ -51,7 +51,7 @@ const OrderHistoryDetailsScreen = ({ route, navigation }) => {
           {order.items.map((item, index) => (
             <View style={styles.itemRow} key={index}>
               <CommonTextView style={styles.itemQty}>
-                x {item.itemQty}
+                x {item.quantity}
               </CommonTextView>
               <CommonTextView style={styles.itemName}>
                 {item.name}
