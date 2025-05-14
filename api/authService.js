@@ -3,7 +3,7 @@ import apiClient from './APIClient';
 
 export const loginUser = async ({ email, password }) => {
   try {
-    const { data } = await apiClient.post('auth/login', { email, password });
+    const { data } = await apiClient.post('auth/login', { identifier:email, password });
     await AsyncStorage.setItem('authToken', data.token);
     return data;
   } catch (error) {

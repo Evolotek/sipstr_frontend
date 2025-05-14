@@ -23,6 +23,7 @@ import CategoriesScreen from '../screens/Products/CategoriesScreen';
 import ProductDetailScreen from '../screens/Products/ProductDetailScreen';
 import CartScreen from '../screens/Cart/CartScreen';
 import CouponScreen from '../screens/Cart/CouponScreen';
+import CheckoutScreen from '../screens/Checkout/CheckoutScreen';
 
 //Profile
 import AccountSettings from '../screens/User/AccountSettings/AccountSettings';
@@ -108,6 +109,7 @@ export default function App() {
                                     </ScreenWithLayout>
                                 )}
                             </Stack.Screen>
+                            <Stack.Screen name="Checkout" component={CheckoutScreen} />
                             <Stack.Screen name="SorryScreen" component={SorryScreen} />
                             <Stack.Screen name="AccountSettings" component={AccountSettings} />
                             <Stack.Screen name="Addresses" component={AddressesScreen} />

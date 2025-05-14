@@ -21,3 +21,13 @@ export const getUserData = async () => {
 export const clearStorage = async () => {
   await AsyncStorage.clear();
 };
+
+export const getSelectedAddress = async () => {
+  const raw = await AsyncStorage.getItem('selectedAddress');
+  return raw ? JSON.parse(raw) : null;
+};
+
+export const getCartItems = async () => {
+  const raw = await AsyncStorage.getItem('cart');
+  return raw ? JSON.parse(raw) : [];
+};

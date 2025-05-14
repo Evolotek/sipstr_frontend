@@ -144,7 +144,7 @@ const CartScreen = ({ navigation }) => {
           <Text style={[styles.summaryText, { fontWeight: 'bold' }]}>Total: ${total.toFixed(2)}</Text>
         </View>
 
-        <TouchableOpacity style={styles.checkoutBtn}>
+        <TouchableOpacity style={styles.checkoutBtn} onPress={() => navigation.navigate('Checkout', {total, tax})}>
           <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
             Proceed to Checkout
           </Text>
