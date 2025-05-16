@@ -7,4 +7,6 @@ export const colors = {
   border: "#000000",
   grayText: "#9CA3AF",
   lightOrange: "#FFD8C8",
+  textInputBorderColor: "#4B5563",
+  textViewFontColor: "#374151",
 };

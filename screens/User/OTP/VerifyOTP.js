@@ -1,63 +1,70 @@
-import React, { useRef, useState, useEffect, use } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation } from "react-query";
 import CommonTextView from "../../../components/CommonTextView";
 import CommonButton from "../../../components/CommonButton";
 import CommonTextField from "../../../components/CommonTextField";
 import { colors } from "../../../components/colors";
 import { sendOTP, verifyOTP } from "../../../api/authService";
-import { getUserData } from "../../../Utils/StorageHelper";
+import { getUserData, saveToken } from "../../../Utils/StorageHelper";
 import CommonUtils from "../../../Utils/CommonUtils";
 import Logo from "../../../components/Logo";
 import { useLoader } from "../../../Utils/LoaderContext";
+import ApiReactQueryHelper from "../../../api/ApiReactQueryHelper";
 
 const VerifyOTPScreen = ({ navigation, route }) => {
   const { setLoading } = useLoader();
+  const { receivedOtp, source, email } = route.params;
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const refs = Array(6)
+    .fill()
+    .map(() => useRef());
 
-  const [otp, setOtp] = useState(route?.params.split(""));
-  //const [otp, setOtp] = useState(["", "", "", ""]);
-  const refs = [useRef(), useRef(), useRef(), useRef()];
-  // Send OTP Mutation
-  const sendOTPMutation = useMutation({
-    mutationFn: sendOTP,
-    onSuccess: (data) => {
-      setLoading(false);
-      if (data.otp) {
+  useEffect(() => {
+    if (receivedOtp) {
+      console.log("Setting OTP from route:", receivedOtp);
+      setOtp(receivedOtp.split(""));
+    }
+  }, [receivedOtp]);
+
+  // useEffect(() => {
+  //   const fetchUserDataAndSendOTP = async () => {
+  //     const userData = await getUserData();
+  //     sendOTPMutation.mutate({ email: userData.email });
+  //   };
+  //   fetchUserDataAndSendOTP();
+  // }, []);
+
+  const sendOTPMutation = ApiReactQueryHelper.useMutation(sendOTP, {
+    setLoading,
+    successMessage: "OTP received successful",
+    errorMessage: "OTP failed to receive",
+    onSuccessCallback: (result) => {
+      if (result?.otp) {
         CommonUtils.showToast("OTP sent successfully!", "success");
       } else {
-        CommonUtils.showToast("Failed to send OTP", "error");
+        CommonUtils.showToast("OTP missing from response", "error");
       }
-    },
-    onError: (error) => {
-      setLoading(false);
-      console.log(error);
-      CommonUtils.showToast("Failed to send OTP", "error");
     },
   });
 
-  // Verify OTP Mutation
-  const verifyOTPMutation = useMutation({
-    mutationFn: verifyOTP,
-    onSuccess: (data) => {
-      setLoading(false);
-      if (data.token) {
-        navigation.navigate("Home");
+  const verifyOTPMutation = ApiReactQueryHelper.useMutation(verifyOTP, {
+    setLoading,
+    successMessage: "OTP verified successful",
+    errorMessage: "OTP failed to verify",
+    onSuccessCallback: async (result) => {
+      if (result?.token) {
+        if (source === "signup") {
+          await saveToken(result);
+          navigation.navigate("Home");
+        } else if (source === "forgotPassword") {
+          navigation.navigate("ResetPassword", { email });
+        }
       } else {
-        CommonUtils.showToast("Failed to verify OTP", "error");
+        CommonUtils.showToast("OTP missing from response", "error");
       }
     },
-    onError: (error) => {
-      setLoading(false);
-      console.log(error);
-      CommonUtils.showToast("Failed to verify OTP", "error");
-    },
   });
-
-  useEffect(async () => {
-    const userData = await getUserData();
-    sendOTPMutation.mutate({ email: JSON.parse(userData).email });
-  }, []);
 
   const handleChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
@@ -65,14 +72,14 @@ const VerifyOTPScreen = ({ navigation, route }) => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 3) {
-      refs[index + 1].current.focus();
+    if (value && index < refs.length - 1) {
+      refs[index + 1].current?.focus();
     }
   };
 
   const handleBackspace = (index, value) => {
     if (value === "" && index > 0) {
-      refs[index - 1].current.focus();
+      refs[index - 1].current?.focus();
     }
   };
 
@@ -84,10 +91,7 @@ const VerifyOTPScreen = ({ navigation, route }) => {
     }
     setLoading(true);
     const userData = await getUserData();
-    verifyOTPMutation.mutate({
-      email: userData.email,
-      otp: joinedOTP,
-    });
+    verifyOTPMutation.mutate({ email: userData.email, otp: joinedOTP });
   };
 
   return (
@@ -120,7 +124,7 @@ const VerifyOTPScreen = ({ navigation, route }) => {
       <TouchableOpacity
         onPress={async () => {
           setLoading(true);
-          const userData = await getUserData(); //await AsyncStorage.getItem("user_data");
+          const userData = await getUserData();
           sendOTPMutation.mutate({ email: userData.email });
         }}
       >
@@ -133,10 +137,10 @@ const VerifyOTPScreen = ({ navigation, route }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.white, // Background color
-    alignItems: "center", // Center horizontally
-    justifyContent: "center", // Center vertically
-    padding: 24, // Padding around the edges
+    backgroundColor: colors.white,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
   },
   heading: {
     fontFamily: "Poppins-Regular",
@@ -145,32 +149,32 @@ const styles = {
     marginVertical: 20,
   },
   instruction: {
-    textAlign: "center", // Centered text
-    marginVertical: 16, // Space above and below
-    color: colors.grayText, // Subtext color
+    textAlign: "center",
+    marginVertical: 16,
+    color: colors.grayText,
   },
   otpRow: {
-    flexDirection: "row", // Row layout
-    justifyContent: "center", // Evenly space inputs
-    width: "80%", // 80% of screen width
-    marginBottom: 30, // Space below OTP fields
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "80%",
+    marginBottom: 30,
   },
   otpInput: {
-    width: 50, // Input box width
-    height: 55, // Input box height
-    borderRadius: 10, // Rounded corners
-    borderWidth: 1, // Border thickness
-    borderColor: colors.orange, // Border color
-    fontSize: 24, // Digit font size
-    textAlign: "center", // Center digit inside box
-    fontFamily: "Poppins-SemiBold", // Font style
+    width: 50,
+    height: 55,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.orange,
+    fontSize: 24,
+    textAlign: "center",
+    fontFamily: "Poppins-SemiBold",
     marginHorizontal: 6,
   },
   resendLink: {
-    marginTop: 20, // Space above resend link
-    color: colors.orange, // Link color
-    fontFamily: "Poppins-SemiBold", // Bold font
-    fontSize: 14, // Link font size
+    marginTop: 20,
+    color: colors.orange,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
   },
 };
 

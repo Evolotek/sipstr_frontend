@@ -10,7 +10,7 @@ import { useLoader } from "../../../Utils/LoaderContext";
 import { getUserData, saveUserData } from "../../../Utils/StorageHelper";
 import Logo from "../../../components/Logo";
 import { getMyProfile } from "../../../api/authService";
-import { useQuery } from "react-query";
+import ApiReactQueryHelper from "../../../api/ApiReactQueryHelper";
 
 const EditProfile = ({ navigation }) => {
   const [nameInput, setNameInput] = useState("");
@@ -32,28 +32,33 @@ const EditProfile = ({ navigation }) => {
         setPhoneInput(localUser.mobileNumber);
       }
       setLoading(false);
+
+      refetch();
     };
+
     loadUser();
   }, []);
 
-  useQuery("myProfile", getMyProfile, {
-    enabled: !!initialUserData,
-    initialData: initialUserData,
-    staleTime: 0, // always fetch fresh
-    onSuccess: async (data) => {
-      setUserData(data);
-      setNameInput(data.fullName);
-      setEmailInput(data.email);
-      setPhoneInput(data.mobileNumber);
-      await saveUserData(data); // Save updated profile only once, here
-    },
-    onError: (error) => {
-      CommonUtils.showToast(
-        error.message || "Failed to fetch profile",
-        "error"
-      );
-    },
-  });
+  const { data: profileData, isLoading } = ApiReactQueryHelper.useQuery(
+    "myProfile",
+    getMyProfile,
+    {
+      enabled: false,
+      isLoading: isLoading,
+      successMessage: null,
+      errorMessage: "Failed to fetch profile",
+      onSuccessCallback: async (data) => {
+        setUserData(data);
+        setNameInput(data.fullName);
+        setEmailInput(data.email);
+        setPhoneInput(data.mobileNumber);
+        await saveUserData(data);
+      },
+      onErrorCallback: (error) => {
+        console.log("Error fetching profile", error.message);
+      },
+    }
+  );
 
   const validateAndSubmit = () => {
     const name = nameInput.trim();

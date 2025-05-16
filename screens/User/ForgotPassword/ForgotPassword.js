@@ -8,10 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../../components/colors";
 import HeaderBar from "../../../components/HeaderBar";
 import CommonTextView from "../../../components/CommonTextView";
-import { globalStyles } from "../../../components/styles";
+import ApiReactQueryHelper from "../../../api/ApiReactQueryHelper";
+import { forgotPassword } from "../../../api/authService";
+import { useLoader } from "../../../Utils/LoaderContext";
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
+  const { setLoading } = useLoader();
 
   const handleResetPassword = () => {
     console.log("test");
@@ -23,31 +26,58 @@ const ForgotPasswordScreen = ({ navigation }) => {
       Utils.showToast("Enter a valid email or 10-digit phone number.", "error");
       return;
     }
-    Utils.showToast("Password reset link sent.");
+
+    setLoading(true);
+    forgotPasswordMutation.mutate(emailOrPhone);
   };
+
+  const forgotPasswordMutation = ApiReactQueryHelper.useMutation(
+    forgotPassword,
+    {
+      setLoading,
+      successMessage: "Forgot Password OTP send",
+      errorMessage: "API failed",
+      onSuccessCallback: (result) => {
+        if (result?.otp) {
+          //navigation.navigate("VerifyOTP", result.otp);
+          navigation.navigate("VerifyOTP", {
+            otp: result.otp,
+            source: "forgotPassword",
+            email: emailOrPhone, // optional, for resend OTP or resetting
+          });
+        } else {
+          CommonUtils.showToast("OTP missing from response", "error");
+        }
+      },
+    }
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderBar navigation={navigation} title="Forgot Password" />
-
-      <ScrollView contentContainerStyle={styles.container}>
-        <Logo />
-
-        <CommonTextView
-          style={[globalStyles.textViewSemiBold, { fontSize: 20 }]}
-        >
-          Enter the Email or Phone associated with your account
+      <Logo />
+      <View style={styles.container}>
+        <CommonTextView>
+          Enter the Email or Mobile Number associated with your account
         </CommonTextView>
 
-        <CommonTextField
-          placeholder="Enter Email or Phone"
-          value={emailOrPhone}
-          onChangeText={setEmailOrPhone}
-          style={styles.input}
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>
+            Email / Mobile Number
+          </CommonTextView>
+          <CommonTextField
+            placeholder="Enter your email or mobile number"
+            value={emailOrPhone}
+            onChangeText={setEmailOrPhone}
+            style={styles.input}
+          />
+        </View>
+        <CommonButton
+          title="Reset Password"
+          onPress={handleResetPassword}
+          style={styles.button}
         />
-
-        <CommonButton title="Reset Password" onPress={handleResetPassword} />
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -56,20 +86,27 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.white,
-    justifyContent: "center",
-    padding: 30,
+    paddingTop: 10,
+    paddingHorizontal: 24,
   },
   container: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    gap: 20,
+    marginTop: 32,
+    width: "100%",
   },
   input: {
     width: "100%",
+    marginTop: 20,
+  },
+  inputBlock: {
+    marginBottom: 12,
+  },
+  label: {
+    marginBottom: 4,
+    fontFamily: "Poppins-SemiBold",
   },
   button: {
     width: "100%",
+    marginTop: 20,
   },
 });
 

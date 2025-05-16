@@ -4,28 +4,29 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Image,
+  StyleSheet,
 } from "react-native";
 import { useMutation } from "react-query";
 import { signup } from "../../../api/authService";
-import Logo from "../../../components/Logo";
 import CommonButton from "../../../components/CommonButton";
 import CommonTextField from "../../../components/CommonTextField";
 import CommonTextView from "../../../components/CommonTextView";
 import { colors } from "../../../components/colors";
-import HeaderBar from "../../../components/HeaderBar";
 import { useLoader } from "../../../Utils/LoaderContext";
 import CommonUtils from "../../../Utils/CommonUtils";
+import Logo from "../../../components/Logo";
+import HeaderBar from "../../../components/HeaderBar";
+import ApiReactQueryHelper from "../../../api/ApiReactQueryHelper";
 
 export default function Signup({ navigation }) {
   const { setLoading } = useLoader();
 
   const [formData, setFormData] = useState({
-    fullName: "gaura",
+    fullName: "",
     mobileNumber: "",
-    email: "gaurav.agrawal0208@gmail.com  ",
-    password: "Pass@12345",
-    confirmPassword: "Pass@12345",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (name, value) => {
@@ -33,224 +34,185 @@ export default function Signup({ navigation }) {
   };
 
   const validate = () => {
+    console.log("SignUp: Validate");
     const { fullName, mobileNumber, email, password, confirmPassword } =
       formData;
 
-    if (!fullName) {
-      CommonUtils.showToast("Full name is required", "error");
-      return false;
-    }
-
-    if (!email) {
-      CommonUtils.showToast("Email is required", "error");
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && !emailRegex.test(email)) {
-      CommonUtils.showToast("Invalid email address", "error");
-      return false;
-    }
-
-    if (!password) {
-      CommonUtils.showToast("Password is required", "error");
-      return false;
-    } else if (password.length < 6) {
-      CommonUtils.showToast("Password must be at least 6 characters", "error");
-      return false;
-    }
-
-    if (!confirmPassword) {
-      CommonUtils.showToast("Confirm your password", "error");
-      return false;
-    } else if (password !== confirmPassword) {
-      CommonUtils.showToast("Passwords do not match", "error");
-      return false;
-    }
-
+    if (!fullName) return show("Full name is required");
+    if (!mobileNumber) return show("Mobile number is required");
+    if (!email) return show("Email is required");
+    if (!CommonUtils.isEmailValid(email)) return show("Invalid email address");
+    if (!password) return show("Enter Password");
+    if (!CommonUtils.isPasswordValid(password))
+      return show(
+        "Password must be minimum 8 characters including 1 digit, 1 Upper case, 1 Lower case and 1 Special Character"
+      );
+    if (password !== confirmPassword) return show("Passwords do not match");
     return true;
+
+    function show(msg) {
+      CommonUtils.showToast(msg, "error");
+      return false;
+    }
   };
 
-  const signupMutation = useMutation({
-    mutationFn: (payload) => signup(payload),
-    onSuccess: (result) => {
-      setLoading(false);
-      if (result) {
-        navigation.navigate("VerifyOTP", result.otp);
+  const signupMutation = ApiReactQueryHelper.useMutation(signup, {
+    setLoading,
+    successMessage: "SignUp successful",
+    errorMessage: "SignUp failed",
+    onSuccessCallback: (result) => {
+      console.log("SignUp : onSuccessCallback:  ", result);
+      if (result?.otp) {
+        console.log("SignUp : OTP:  ", result.otp);
+        navigation.navigate("VerifyOTP", {
+          otp: result.otp,
+          source: "SignUp",
+        });
       } else {
-        CommonUtils.showToast(result.message || "Signup failed.", "error");
+        CommonUtils.showToast("OTP missing from response", "error");
       }
     },
-    onError: (error) => {
-      setLoading(false);
-      CommonUtils.showToast(error.message || "Signup failed.", "error");
+    onErrorCallback: (err) => {
+      console.log("🔥 Signup onErrorCallback triggered", err.message);
+      CommonUtils.showToast(err.message, "error");
     },
   });
 
   const handleSubmit = () => {
     if (!validate()) return;
 
-    setLoading(true);
     const payload = {
       email: formData.email,
       password: formData.password,
       fullName: formData.fullName,
       mobileNumber: formData.mobileNumber,
-      roleEnum: "CUSTOMER",
-      otpSignup: true,
+      roleName: "CUSTOMER",
     };
-
     signupMutation.mutate(payload);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView>
-        <HeaderBar navigation={navigation} title="" />
-        <Logo />
-
-        <CommonTextView style={styles.createAccountText}>
-          Create Account
+      <HeaderBar navigation={navigation} title="" />
+      <Logo />
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <CommonTextView style={styles.welcome}>Welcome</CommonTextView>
+        <CommonTextView style={styles.subtitle}>
+          Signup to create account
         </CommonTextView>
 
-        <CommonTextField
-          placeholder="Enter Name"
-          style={styles.input}
-          onChangeText={(val) => handleChange("fullName", val)}
-        />
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>Name</CommonTextView>
+          <CommonTextField
+            placeholder="Enter your name"
+            value={formData.fullName}
+            onChangeText={(val) => handleChange("fullName", val)}
+          />
+        </View>
 
-        <CommonTextField
-          placeholder="Enter Mobile Number"
-          style={styles.input}
-          onChangeText={(val) => handleChange("mobileNumber", val)}
-        />
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>Mobile Number</CommonTextView>
+          <CommonTextField
+            placeholder="Enter your mobile number"
+            value={formData.mobileNumber}
+            onChangeText={(val) => handleChange("mobileNumber", val)}
+          />
+        </View>
 
-        <CommonTextField
-          placeholder="Enter Email"
-          style={styles.input}
-          onChangeText={(val) => handleChange("email", val)}
-        />
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>Email</CommonTextView>
+          <CommonTextField
+            placeholder="Enter your email"
+            value={formData.email}
+            onChangeText={(val) => handleChange("email", val)}
+          />
+        </View>
 
-        <CommonTextField
-          placeholder="Enter Password"
-          secureTextEntry
-          style={styles.input}
-          onChangeText={(val) => handleChange("password", val)}
-        />
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>Password</CommonTextView>
+          <CommonTextField
+            placeholder="Enter password"
+            secureTextEntry
+            value={formData.password}
+            onChangeText={(val) => handleChange("password", val)}
+          />
+        </View>
 
-        <CommonTextField
-          placeholder="Confirm Password"
-          secureTextEntry
-          style={styles.input}
-          onChangeText={(val) => handleChange("confirmPassword", val)}
-        />
+        <View style={styles.inputBlock}>
+          <CommonTextView style={styles.label}>Confirm Password</CommonTextView>
+          <CommonTextField
+            placeholder="Confirm password"
+            secureTextEntry
+            value={formData.confirmPassword}
+            onChangeText={(val) => handleChange("confirmPassword", val)}
+          />
+        </View>
 
         <CommonButton
-          title={signupMutation.isPending ? "Signing Up..." : "SignUp"}
+          title={signupMutation.isPending ? "Signing Up..." : "Sign up"}
           onPress={handleSubmit}
-          style={styles.button}
           disabled={signupMutation.isPending}
+          style={styles.button}
         />
 
         <View style={styles.loginText}>
           <CommonTextView>
             Already have an account?{" "}
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <CommonTextView style={styles.loginLink}> Login </CommonTextView>
+              <CommonTextView style={styles.loginLink}>Login</CommonTextView>
             </TouchableOpacity>
           </CommonTextView>
-        </View>
-
-        <View style={styles.dividerRow}>
-          <View style={styles.divider} />
-          <CommonTextView style={styles.dividerText}>
-            Or Register with
-          </CommonTextView>
-          <View style={styles.divider} />
-        </View>
-
-        <View style={styles.socialRow}>
-          <TouchableOpacity>
-            <Image
-              source={require("../../../assets/images/google.png")}
-              style={styles.socialIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              source={require("../../../assets/images/apple.png")}
-              style={styles.socialIcon}
-            />
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.white,
-    padding: 24,
   },
-  input: {
-    width: "100%",
-    alignSelf: "center",
+  scrollContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    //paddingTop: 10,
   },
-  createAccountText: {
-    fontSize: 26,
-    fontFamily: "Poppins-SemiBold",
-    marginBottom: 15,
+  welcome: {
+    fontSize: 24,
+    color: colors.black,
     textAlign: "center",
-  },
-  loginLink: {
-    color: colors.orange,
+    marginTop: 10,
     fontFamily: "Poppins-SemiBold",
-    alignSelf: "baseline",
+  },
+  subtitle: {
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: 6,
+  },
+  inputBlock: {
+    marginBottom: 12,
+  },
+  label: {
+    marginBottom: 4,
+    fontFamily: "Poppins-SemiBold",
   },
   button: {
+    marginTop: 20,
     width: "100%",
-    margin: 15,
-    alignSelf: "center",
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-    width: "100%",
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#CCC",
-    margin: 15,
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-  },
-  socialRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 20,
-  },
-  socialIcon: {
-    height: 40,
-    width: 40,
-    borderRadius: 8,
-    resizeMode: "contain",
   },
   loginText: {
-    marginTop: 12,
-    alignSelf: "center",
+    marginTop: 20,
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
   },
   loginLink: {
-    fontFamily: "Poppins-SemiBold",
     color: colors.orange,
+    fontFamily: "Poppins-SemiBold",
   },
-};
+});

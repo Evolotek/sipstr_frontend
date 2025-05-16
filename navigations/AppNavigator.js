@@ -53,6 +53,7 @@ import { CouponProvider } from "../Providers/CouponProvider"; // adjust path as 
 
 import BottomTabs from "../components/BottomTabs";
 import TopBar from "../components/CommonTopBar";
+import ResetPassword from "../screens/User/ForgotPassword/ResetPassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -166,6 +167,7 @@ export default function App() {
                 name="OrderTrackingScreen"
                 component={OrderTrackingScreen}
               />
+              <Stack.Screen name="ResetPassword" component={ResetPassword} />
             </Stack.Navigator>
           </NavigationContainer>
         </FavoriteProvider>

@@ -1,30 +1,27 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
-import { useMutation } from "react-query";
-import { loginUser } from "../../../api/authService";
-import Logo from "../../../components/Logo";
 import CommonButton from "../../../components/CommonButton";
 import CommonTextField from "../../../components/CommonTextField";
 import CommonTextView from "../../../components/CommonTextView";
 import { useLoader } from "../../../Utils/LoaderContext";
 import CommonUtils from "../../../Utils/CommonUtils";
 import { colors } from "../../../components/colors";
+import Logo from "../../../components/Logo";
+import Checkbox from "expo-checkbox";
+import ApiReactQueryHelper from "../../../api/ApiReactQueryHelper";
+import { loginUser } from "../../../api/authService";
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const { setLoading } = useLoader();
 
-  const mutation = useMutation(loginUser, {
-    onSuccess: async (data) => {
-      setLoading(false);
-      CommonUtils.showToast("Login successful!", "success");
-      setTimeout(() => navigation.navigate("Home"), 1500);
-    },
-    onError: (error) => {
-      setLoading(false);
-      CommonUtils.showToast(error.message || "Login failed.", "error");
-    },
+  const mutation = ApiReactQueryHelper.useMutation(loginUser, {
+    setLoading,
+    successMessage: "Login successful",
+    errorMessage: "Login failed",
+    onSuccessCallback: () => navigation.navigate("Home"),
   });
 
   const handleLogin = () => {
@@ -56,30 +53,46 @@ export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <Logo />
-      <CommonTextView style={styles.welcomeText}>Welcome</CommonTextView>
+      <CommonTextView style={styles.welcome}>Welcome</CommonTextView>
 
-      <CommonTextField
-        placeholder="Enter Mobile Number/Email"
-        value={username}
-        onChangeText={setUsername}
-        style={styles.input}
-      />
-      <CommonTextField
-        placeholder="Enter Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        style={styles.forgotPasswordContainer}
-        onPress={() => navigation.navigate("ForgotPassword")}
-      >
-        <CommonTextView style={styles.forgotText}>
-          Forgot Password
+      <View style={styles.inputContainer}>
+        <CommonTextView style={styles.label}>
+          Email / Mobile number
         </CommonTextView>
-      </TouchableOpacity>
+        <CommonTextField
+          placeholder="Enter your email / mobile number"
+          value={username}
+          onChangeText={setUsername}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <CommonTextView style={styles.label}>Password</CommonTextView>
+        <CommonTextField
+          placeholder="Enter your password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+      </View>
+
+      <View style={styles.optionsRow}>
+        <View style={styles.checkboxRow}>
+          <Checkbox
+            value={rememberMe}
+            onValueChange={setRememberMe}
+            color={rememberMe ? colors.orange : undefined}
+          />
+          <CommonTextView style={styles.rememberText}>
+            Remember me
+          </CommonTextView>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+          <CommonTextView style={styles.forgotText}>
+            Forgot Password?
+          </CommonTextView>
+        </TouchableOpacity>
+      </View>
 
       <CommonButton title="Login" onPress={handleLogin} style={styles.button} />
 
@@ -98,40 +111,61 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
     justifyContent: "center",
-    alignItems: "center",
+    // alignItems: "center",
+    padding: 20,
   },
-  welcomeText: {
-    fontSize: 26,
-    fontFamily: "Poppins-SemiBold",
-    marginVertical: 10,
+
+  welcome: {
+    fontSize: 24,
+    color: colors.black,
     textAlign: "center",
+    fontFamily: "Poppins-Medium",
+    marginBottom: 20,
   },
-  input: {
+  inputContainer: {
+    marginVertical: 6,
     width: "100%",
+    paddingHorizontal: 20,
+  },
+  label: {
+    fontSize: 16,
+    //fontFamily: "Poppins-SemiBold",
+    marginBottom: 4,
+  },
+  optionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 5,
     marginHorizontal: 20,
   },
-  forgotPasswordContainer: {
-    alignSelf: "flex-end",
-    marginRight: 8,
-    marginLeft: -10,
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rememberText: {
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
+    marginLeft: 10,
+    color: colors.textViewFontColor,
   },
   forgotText: {
     color: colors.orange,
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
-    textAlign: "right",
+  },
+  button: {
+    marginTop: 20,
+    width: "100%",
+    //borderRadius: 8,
   },
   signupText: {
-    fontSize: 14,
+    fontSize: 16,
+    textAlign: "center",
+    //fontFamily: "Poppins-Regular",
+    marginTop: 20,
+    //color: colors.text,
   },
   signupLink: {
     color: colors.orange,
-    fontFamily: "Poppins-SemiBold",
-  },
-  button: {
-    width: "100%",
-    marginHorizontal: 25,
-    marginVertical: 15,
-    alignSelf: "center",
+    //fontFamily: "Poppins-SemiBold",
   },
 });

@@ -23,15 +23,23 @@ export const loginUser = async ({ email, password }) => {
   }
 };
 
+// export const signup = async (userData) => {
+//   try {
+//     const { data } = await apiClient.post("auth/signup", userData);
+//     await saveUserData(data);
+//     return data;
+//   } catch (error) {
+//     console.error("Signup error:", error);
+//     throw new Error(error.response?.data?.message || "Signup failed");
+//   }
+// };
+
 export const signup = async (userData) => {
-  try {
-    const { data } = await apiClient.post("auth/signup", userData);
-    await saveUserData(data);
-    return data;
-  } catch (error) {
-    console.error("Signup error:", error);
-    throw new Error(error.response?.data?.message || "Signup failed");
-  }
+  console.log("Inside SignUp from authService.js");
+  const response = await apiClient.post("auth/signup", userData);
+  await saveUserData(response.data);
+  console.log("Inside SignUp() =>", response); // ✅ now prints properly
+  return response; // ✅ must return full response
 };
 
 export const sendOTP = async ({ email }) => {
@@ -69,6 +77,20 @@ export const getMyProfile = async () => {
     console.error("Error fetching user profile:", error);
     throw new Error(
       error.response?.data?.message || "Unable to fetch User data"
+    );
+  }
+};
+
+export const forgotPassword = async ({ email: emailPhone }) => {
+  try {
+    const data = await apiClient.post(
+      `auth/password/forgot?identifier=${encodeURIComponent(emailPhone)}}`,
+      {}
+    );
+    return data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Enable to send OTP on your Email/Phone"
     );
   }
 };

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React from "react";
+import { Image, StyleSheet, View } from "react-native";
 
 export default function Logo({ style }) {
   return (
@@ -15,12 +15,13 @@ export default function Logo({ style }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 74,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
+    //marginTop: 74,
+    alignItems: "center",
+    justifyContent: "center",
   },
   logo: {
     width: 184,
     height: 108,
-  }
+  },
 });

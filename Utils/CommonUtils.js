@@ -38,7 +38,7 @@ const CommonUtils = {
   isWeb: () => Platform.OS === "web",
 
   showToast: (msg, type = "info") => {
-    console.log("Toast Triggered: ", msg);
+    console.log(`🚨 showToast: ${type} - ${msg}`);
     Toast.show({
       type,
       text1: msg,
@@ -55,6 +55,12 @@ const CommonUtils = {
   isPhoneValid: (phone) => {
     const phoneRegex = /^[0-9]{10}$/;
     return phoneRegex.test(phone);
+  },
+
+  isPasswordValid: (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
   },
 };
 
